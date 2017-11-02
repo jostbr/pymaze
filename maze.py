@@ -3,7 +3,6 @@ import cell
 import random
 import copy
 import time
-import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import animation
 
@@ -22,7 +21,7 @@ class Maze(object):
         self.start_col = start_coor[1]
         self.loop_count = 0
         self.grid = self.generate_grid()
-        self.grid_list = copy.deepcopy(self.grid)
+        self.init_grid = copy.deepcopy(self.grid)
         self.path = [(start_coor)]  # To track path of solution
 
     def generate_grid(self):
@@ -86,20 +85,49 @@ class Maze(object):
                 k_curr, l_curr = visited_cells.pop()      # Pop previous visited cell (backtracking)
                 self.path.append((k_curr, l_curr))
 
-            #self.grid_list.append(copy.deepcopy(self.grid))
             self.loop_count += 1
 
         print("Number of moves performed: {}".format(len(self.path)))
         print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
         return self.grid
 
-    def plot_grid(self):
+    def pick_random_entry_exit(self):
+        """Function that picks random coordinates along the maze boundary
+        to represent either the entry or exit point of the maze."""
+        rng_side = random.randint(0, 3)
+
+        if (rng_side == 0):
+            rng_entry_exit = (0, random.randint(0, self.num_cols-1))
+        elif (rng_side == 2):
+            rng_entry_exit = (self.num_rows-1, random.randint(0, self.num_cols-1))
+        elif (rng_side == 1):
+            rng_entry_exit = (random.randint(0, self.num_rows-1), self.num_cols-1)
+        elif (rng_side == 3):
+            rng_entry_exit = (random.randint(0, self.num_rows-1), 0)
+
+        return rng_entry_exit
+
+    def plot_maze(self):
+        """Function that plots the generated mase. Also with added entry and exit point."""
         fig, ax = plt.subplots(figsize = (7, 7*self.num_rows/self.num_cols))
-        
+        ax.axes.get_xaxis().set_visible(False)
+        ax.axes.get_yaxis().set_visible(False)
         lines = list()
+
+        entry_coor = self.pick_random_entry_exit()  # Entry cell of maze
+        exit_coor = self.pick_random_entry_exit()    # Exit cell of maze
+
+        ax.text(entry_coor[1], entry_coor[0], "ENTRY", weight = "bold", va = "bottom")
+        ax.text(exit_coor[1], exit_coor[0], "EXIT", weight = "bold")
 
         for i in range(self.num_rows):
             for j in range(self.num_cols):
+                if (entry_coor == (i, j)):
+                    self.grid[i][j].set_as_entry_exit(self.num_rows-1, self.num_cols-1)
+                
+                if (exit_coor == (i, j)):
+                    self.grid[i][j].set_as_entry_exit(self.num_rows-1, self.num_cols-1)
+
                 if (self.grid[i][j].walls["top"] == True):
                     lines.append(ax.plot([j*self.cell_size, (j+1)*self.cell_size],
                         [i*self.cell_size, i*self.cell_size], color = "k"))
@@ -113,8 +141,8 @@ class Maze(object):
                     lines.append(ax.plot([j*self.cell_size, j*self.cell_size],
                         [(i+1)*self.cell_size, i*self.cell_size], color = "k"))
 
-    def animate_maze_generation(self):
-        fig = plt.figure(figsize = (14, 14*self.num_rows/self.num_cols))
+    def animate_maze(self):
+        fig = plt.figure(figsize = (7, 7*self.num_rows/self.num_cols))
         ax = plt.axes(xlim = (-1, self.width+1), ylim = (-1, self.height+1))
         #ax.set_aspect("equal")
         ax.axes.get_xaxis().set_visible(False)
@@ -169,20 +197,24 @@ class Maze(object):
 
         def animate_walls(frame):
             if (frame < len(self.path) - 1):
-                self.grid_list[self.path[frame][0]][self.path[frame][1]].remove_walls(
+                self.init_grid[self.path[frame][0]][self.path[frame][1]].remove_walls(
                     self.path[frame+1][0], self.path[frame+1][1])   # Wall between curr and neigh
-                self.grid_list[self.path[frame+1][0]][self.path[frame+1][1]].remove_walls(
+                self.init_grid[self.path[frame+1][0]][self.path[frame+1][1]].remove_walls(
                     self.path[frame][0], self.path[frame][1])   # Wall between neigh and curr
 
-                current_cell = self.grid_list[self.path[frame][0]][self.path[frame][1]]
+                current_cell = self.init_grid[self.path[frame][0]][self.path[frame][1]]
+                next_cell = self.init_grid[self.path[frame+1][0]][self.path[frame+1][1]]
 
                 """Function to animate walls between cells as the search goes on."""
                 for wall_key in ["right", "bottom"]:    # Only need to draw two of the four walls (overlap)
                     if (current_cell.walls[wall_key] == False):
                         lines["{},{}: {}".format(current_cell.row,
                             current_cell.col, wall_key)].set_visible(False)
+                    if (next_cell.walls[wall_key] == False):
+                        lines["{},{}: {}".format(next_cell.row,
+                            next_cell.col, wall_key)].set_visible(False)
 
-                return lines["{},{}: {}".format(current_cell.row, current_cell.col, wall_key)]
+                return []
 
             else:
                 return None
@@ -191,21 +223,15 @@ class Maze(object):
             """Function to animate where the current search is happening."""
             if (frame < len(self.path)):
                 indicator.set_xy((self.path[frame][1]*self.cell_size, self.path[frame][0]*self.cell_size))
-                return indicator
-            else:
-                return None
+
+            return []
 
         anim = animation.FuncAnimation(fig, animate, init_func = init, frames = len(self.path),
-            interval = 10, blit = True, repeat = False)
+            interval = 100, blit = True, repeat = False)
         #mpeg_writer = animation.FFMpegWriter(fps = 24, bitrate = 1000,
         #    codec = "libx264", extra_args = ["-pix_fmt", "yuv420p"])
         #anim.save("{}x{}.mp4".format(self.num_rows, self.num_cols), writer = mpeg_writer)
         return anim
-
-    def plot_maze(self):
-        flat_grid = [item.visited for sublist in self.grid for item in sublist]
-        CS = plt.imshow(np.array(flat_grid).reshape((self.num_rows, self.num_cols)))
-        plt.show()
 
     def print_grid(self, g):
         for i in range(self.num_rows):
@@ -218,11 +244,9 @@ class Maze(object):
 
 
 if (__name__ == "__main__"):
-    maze_generator = Maze(20, 40, 1, (0, 0))
+    maze_generator = Maze(20, 20, 1, (0, 0))
     grid = maze_generator.generate_maze()
-    #maze_generator.plot_grid()
-    t_0 = time.clock()
-    anim = maze_generator.animate_maze_generation()
-    print("Time spent in animation: {}".format(time.clock() - t_0))
+    maze_generator.plot_maze()
+    #anim = maze_generator.animate_maze()
 
     plt.show()
