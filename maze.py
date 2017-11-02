@@ -16,10 +16,14 @@ class Maze(object):
         self.num_rows = num_rows
         self.grid_size = num_rows*num_cols
         self.cell_size = cell_size
+        self.height = num_rows*cell_size
+        self.width = num_cols*cell_size
         self.start_row = start_coor[0]
         self.start_col = start_coor[1]
+        self.loop_count = 0
         self.grid = self.generate_grid()
-        self.grid_list = [copy.deepcopy(self.grid)]
+        self.grid_list = copy.deepcopy(self.grid)
+        self.path = [(start_coor)]  # To track path of solution
 
     def generate_grid(self):
         """Function that creates a 2D grid of Cell objects to be the maze."""
@@ -71,21 +75,22 @@ class Maze(object):
                 visited_cells.append((k_curr, l_curr))              # Add current cell to stack
                 k_next, l_next = random.choice(neighbour_coors)     # Choose random neighbour
                 self.grid[k_curr][l_curr].remove_walls(k_next, l_next)   # Remove walls between neighbours
-                self.grid[k_next][l_next].remove_walls(k_curr, l_curr)   # Remove walls between neighbours
+                self.grid[k_next][l_next].remove_walls(k_curr, l_curr)   # Remove walls between neighbours                                
                 self.grid[k_next][l_next].visited = True            # Move to that neighbour
                 visit_counter += 1
                 k_curr = k_next
                 l_curr = l_next
+                self.path.append((k_curr, l_curr))
 
             elif (len(visited_cells) > 0):  # If there are no unvisited neighbour cells
-                k_curr, l_curr = visited_cells.pop()      # Pop prevoius visited cell (backtracking)
+                k_curr, l_curr = visited_cells.pop()      # Pop previous visited cell (backtracking)
+                self.path.append((k_curr, l_curr))
 
-            self.grid[k_curr][l_curr].active = True
-            self.grid_list.append(copy.deepcopy(self.grid))
-            self.grid[k_curr][l_curr].active = False
-        
+            #self.grid_list.append(copy.deepcopy(self.grid))
+            self.loop_count += 1
+
+        print("Number of moves performed: {}".format(len(self.path)))
         print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
-        
         return self.grid
 
     def plot_grid(self):
@@ -109,12 +114,9 @@ class Maze(object):
                         [(i+1)*self.cell_size, i*self.cell_size], color = "k"))
 
     def animate_maze_generation(self):
-        #for i in range(len(self.grid_list)):
-        #    self.print_grid(self.grid_list[i])
-
-        fig = plt.figure(figsize = (8, 8))
-        ax = plt.axes(xlim = (-1, self.num_cols*self.cell_size+1),
-            ylim = (-1, self.num_cols*self.cell_size+1))
+        fig = plt.figure(figsize = (14, 14*self.num_rows/self.num_cols))
+        ax = plt.axes(xlim = (-1, self.width+1), ylim = (-1, self.height+1))
+        #ax.set_aspect("equal")
         ax.axes.get_xaxis().set_visible(False)
         ax.axes.get_yaxis().set_visible(False)
 
@@ -125,60 +127,79 @@ class Maze(object):
             self.cell_size, fc = "purple", alpha = 0.5)
         ax.add_patch(indicator)
 
+        # Only need to plot right and bottom wall for each cell since walls overlap
+        color_walls = "k"
         for i in range(self.num_rows):
             for j in range(self.num_cols):
-                for wall_key in self.grid_list[0][i][j].walls.keys():
-                    lines["{},{}: {}".format(i, j, wall_key)] = ax.plot([], [],
-                        linewidth = 2, color = "k")[0]
+                lines["{},{}: right".format(i, j)] = ax.plot([], [],
+                    linewidth = 2, color = color_walls)[0]
+                lines["{},{}: bottom".format(i, j)] = ax.plot([], [],
+                    linewidth = 2, color = color_walls)[0]
+
+        # Plotting boundaries of maze
+        color_boundary = "k"
+        ax.plot([0, self.width], [self.height,self.height], linewidth = 2, color = color_boundary)
+        ax.plot([self.width, self.width], [self.height, 0], linewidth = 2, color = color_boundary)
+        ax.plot([self.width, 0], [0, 0], linewidth = 2, color = color_boundary)
+        ax.plot([0, 0], [0, self.height], linewidth = 2, color = color_boundary)
 
         def init():
-            """Function that initializes the animation process by setting up artists."""
+            """Function that initializes animation process by setting up artists and drawing grid."""
             for i in range(self.num_rows):
                 for j in range(self.num_cols):
-                    if (self.grid_list[0][i][j].active == True):
-                        indicator.set_xy((j*self.cell_size, i*self.cell_size))
-
-                    lines["{},{}: top".format(i,j)].set_data([j*self.cell_size, (j+1)*self.cell_size],
-                        [i*self.cell_size, i*self.cell_size])
+                    #lines["{},{}: top".format(i,j)].set_data([j*self.cell_size, (j+1)*self.cell_size],
+                    #    [i*self.cell_size, i*self.cell_size])
                     lines["{},{}: right".format(i,j)].set_data([(j+1)*self.cell_size, (j+1)*self.cell_size],
                         [i*self.cell_size, (i+1)*self.cell_size])
                     lines["{},{}: bottom".format(i,j)].set_data([(j+1)*self.cell_size, j*self.cell_size],
                         [(i+1)*self.cell_size, (i+1)*self.cell_size])
-                    lines["{},{}: left".format(i,j)].set_data([j*self.cell_size, j*self.cell_size],
-                        [(i+1)*self.cell_size, i*self.cell_size])
+                    #lines["{},{}: left".format(i,j)].set_data([j*self.cell_size, j*self.cell_size],
+                    #    [(i+1)*self.cell_size, i*self.cell_size])
 
+            indicator.set_xy((self.path[0][1]*self.cell_size, self.path[0][0]*self.cell_size))
+            
             return []
 
         def animate(frame):
             """Function to supervise animation of all objects."""
-            for i in range(self.num_rows):
-                for j in range(self.num_cols):
-                    current_cell = self.grid_list[frame][i][j]
-                    animate_walls(frame, current_cell)
-                    animate_indicator(frame, current_cell)
-
-            ax.set_title("Step: {}".format(frame + 1))
+            animate_walls(frame)
+            animate_indicator(frame+1)
+            ax.set_title("Step: {}".format(frame + 1), fontname = "serif", fontsize = 19)
             return []
 
-        def animate_walls(frame, current_cell):
-            """Function to animate walls between cells as the search goes on."""
-            for wall_key in current_cell.walls.keys():
-                if (current_cell.walls[wall_key] == False):
-                    lines["{},{}: {}".format(current_cell.row,
-                        current_cell.col, wall_key)].set_visible(False)
+        def animate_walls(frame):
+            if (frame < len(self.path) - 1):
+                self.grid_list[self.path[frame][0]][self.path[frame][1]].remove_walls(
+                    self.path[frame+1][0], self.path[frame+1][1])   # Wall between curr and neigh
+                self.grid_list[self.path[frame+1][0]][self.path[frame+1][1]].remove_walls(
+                    self.path[frame][0], self.path[frame][1])   # Wall between neigh and curr
 
-            return lines["{},{}: {}".format(current_cell.row, current_cell.col, wall_key)]
+                current_cell = self.grid_list[self.path[frame][0]][self.path[frame][1]]
 
-        def animate_indicator(frame, current_cell):
+                """Function to animate walls between cells as the search goes on."""
+                for wall_key in ["right", "bottom"]:    # Only need to draw two of the four walls (overlap)
+                    if (current_cell.walls[wall_key] == False):
+                        lines["{},{}: {}".format(current_cell.row,
+                            current_cell.col, wall_key)].set_visible(False)
+
+                return lines["{},{}: {}".format(current_cell.row, current_cell.col, wall_key)]
+
+            else:
+                return None
+
+        def animate_indicator(frame):
             """Function to animate where the current search is happening."""
-            if (current_cell.active == True):
-                indicator.set_xy((current_cell.col*self.cell_size,
-                    current_cell.row*self.cell_size))
+            if (frame < len(self.path)):
+                indicator.set_xy((self.path[frame][1]*self.cell_size, self.path[frame][0]*self.cell_size))
+                return indicator
+            else:
+                return None
 
-            return indicator
-
-        anim = animation.FuncAnimation(fig, animate, init_func = init, frames = len(self.grid_list),
-            interval = 50, blit = True, repeat = False)
+        anim = animation.FuncAnimation(fig, animate, init_func = init, frames = len(self.path),
+            interval = 10, blit = True, repeat = False)
+        #mpeg_writer = animation.FFMpegWriter(fps = 24, bitrate = 1000,
+        #    codec = "libx264", extra_args = ["-pix_fmt", "yuv420p"])
+        #anim.save("{}x{}.mp4".format(self.num_rows, self.num_cols), writer = mpeg_writer)
         return anim
 
     def plot_maze(self):
@@ -197,9 +218,11 @@ class Maze(object):
 
 
 if (__name__ == "__main__"):
-    maze_generator = Maze(20, 20, 1, (4, 4))
+    maze_generator = Maze(20, 40, 1, (0, 0))
     grid = maze_generator.generate_maze()
     #maze_generator.plot_grid()
+    t_0 = time.clock()
     anim = maze_generator.animate_maze_generation()
+    print("Time spent in animation: {}".format(time.clock() - t_0))
 
     plt.show()
