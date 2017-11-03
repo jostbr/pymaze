@@ -95,30 +95,38 @@ class Maze(object):
         """Function that picks random coordinates along the maze boundary
         to represent either the entry or exit point of the maze."""
         rng_side = random.randint(0, 3)
+        correction_factor = 1.5*self.cell_size
 
         if (rng_side == 0):
             rng_entry_exit = (0, random.randint(0, self.num_cols-1))
+            coor_correction = (0, -correction_factor)
         elif (rng_side == 2):
             rng_entry_exit = (self.num_rows-1, random.randint(0, self.num_cols-1))
+            coor_correction = (0, correction_factor)
         elif (rng_side == 1):
             rng_entry_exit = (random.randint(0, self.num_rows-1), self.num_cols-1)
+            coor_correction = (correction_factor, 0)
         elif (rng_side == 3):
             rng_entry_exit = (random.randint(0, self.num_rows-1), 0)
+            coor_correction = (-correction_factor, 0)
 
-        return rng_entry_exit
+        return (rng_entry_exit, coor_correction)
 
     def plot_maze(self):
         """Function that plots the generated mase. Also with added entry and exit point."""
-        fig, ax = plt.subplots(figsize = (7, 7*self.num_rows/self.num_cols))
+        fig = plt.figure(figsize = (7, 7*self.num_rows/self.num_cols))
+        ax = plt.axes(xlim = (-2*self.cell_size, self.width+2*self.cell_size),
+            ylim = (-2*self.cell_size, self.height+2*self.cell_size))
+
         ax.axes.get_xaxis().set_visible(False)
         ax.axes.get_yaxis().set_visible(False)
         lines = list()
 
-        entry_coor = self.pick_random_entry_exit()  # Entry cell of maze
-        exit_coor = self.pick_random_entry_exit()    # Exit cell of maze
+        entry_coor, entry_correct = self.pick_random_entry_exit()  # Entry cell of maze
+        exit_coor, exit_correct = self.pick_random_entry_exit()    # Exit cell of maze
 
-        ax.text(entry_coor[1], entry_coor[0], "ENTRY", weight = "bold", va = "bottom")
-        ax.text(exit_coor[1], exit_coor[0], "EXIT", weight = "bold")
+        ax.text(entry_coor[1] + entry_correct[0], entry_coor[0] + entry_correct[1], "ENTRY", weight = "bold", va = "bottom")
+        ax.text(exit_coor[1] + exit_correct[0], exit_coor[0] + exit_correct[1], "EXIT", weight = "bold")
 
         for i in range(self.num_rows):
             for j in range(self.num_cols):
@@ -212,7 +220,7 @@ class Maze(object):
                             current_cell.col, wall_key)].set_visible(False)
                     if (next_cell.walls[wall_key] == False):
                         lines["{},{}: {}".format(next_cell.row,
-                            next_cell.col, wall_key)].set_visible(False)
+                            next_cell.col, wall_key)].set_alpha(False)
 
                 return []
 
@@ -227,7 +235,7 @@ class Maze(object):
             return []
 
         anim = animation.FuncAnimation(fig, animate, init_func = init, frames = len(self.path),
-            interval = 100, blit = True, repeat = False)
+            interval = 1, blit = True, repeat = False)
         #mpeg_writer = animation.FFMpegWriter(fps = 24, bitrate = 1000,
         #    codec = "libx264", extra_args = ["-pix_fmt", "yuv420p"])
         #anim.save("{}x{}.mp4".format(self.num_rows, self.num_cols), writer = mpeg_writer)

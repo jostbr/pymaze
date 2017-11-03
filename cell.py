@@ -6,8 +6,7 @@ class Cell(object):
         self.col = col
         self.visited = False
         self.active = False
-        self.is_start = False
-        self.is_end = False
+        self.entry_exit_location = None
         self.walls = {"top": True, "right": True, "bottom": True, "left": True}
         self.neighbours = list()
 
