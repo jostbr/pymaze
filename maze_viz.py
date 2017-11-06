@@ -12,7 +12,6 @@ def plot_maze(maze, grid, save_filename = None):
     #ax.axis("off")
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
-    lines = list()
 
     title_box = ax.text(0, maze.num_rows + maze.cell_size + 0.1,
         r"{}$\times${}".format(maze.num_rows, maze.num_cols),
@@ -26,17 +25,68 @@ def plot_maze(maze, grid, save_filename = None):
                 ax.text(j*maze.cell_size, i*maze.cell_size, "END", fontsize = 7, weight = "bold")
 
             if (grid[i][j].walls["top"] == True):
-                lines.append(ax.plot([j*maze.cell_size, (j+1)*maze.cell_size],
-                    [i*maze.cell_size, i*maze.cell_size], color = "k"))
+                ax.plot([j*maze.cell_size, (j+1)*maze.cell_size],
+                    [i*maze.cell_size, i*maze.cell_size], color = "k")
             if (grid[i][j].walls["right"] == True):
-                lines.append(ax.plot([(j+1)*maze.cell_size, (j+1)*maze.cell_size],
-                    [i*maze.cell_size, (i+1)*maze.cell_size], color = "k"))
+                ax.plot([(j+1)*maze.cell_size, (j+1)*maze.cell_size],
+                    [i*maze.cell_size, (i+1)*maze.cell_size], color = "k")
             if (grid[i][j].walls["bottom"] == True):
-                lines.append(ax.plot([(j+1)*maze.cell_size, j*maze.cell_size],
-                    [(i+1)*maze.cell_size, (i+1)*maze.cell_size], color = "k"))
+                ax.plot([(j+1)*maze.cell_size, j*maze.cell_size],
+                    [(i+1)*maze.cell_size, (i+1)*maze.cell_size], color = "k")
             if (grid[i][j].walls["left"] == True):
-                lines.append(ax.plot([j*maze.cell_size, j*maze.cell_size],
-                    [(i+1)*maze.cell_size, i*maze.cell_size], color = "k"))
+                ax.plot([j*maze.cell_size, j*maze.cell_size],
+                    [(i+1)*maze.cell_size, i*maze.cell_size], color = "k")
+
+    if (save_filename is not None):
+        fig.savefig("{}.png".format(save_filename), frameon = False)
+
+def plot_maze_solution(maze, grid, path, save_filename = None):
+    """Function that plots the generated maze. Also adds indication of entry and exit points."""
+    fig = plt.figure(figsize = (7, 7*maze.num_rows/maze.num_cols))
+    ax = plt.axes()
+
+    ax.set_aspect("equal")
+    #ax.axis("off")
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+
+    title_box = ax.text(0, maze.num_rows + maze.cell_size + 0.1,
+        r"{}$\times${}".format(maze.num_rows, maze.num_cols),
+        bbox={"facecolor": "gray", "alpha": 0.5, "pad": 4}, fontname = "serif", fontsize = 15)
+
+    for i in range(maze.num_rows):
+        for j in range(maze.num_cols):
+            if (grid[i][j].is_entry_exit == "entry"):
+                ax.text(j*maze.cell_size, i*maze.cell_size, "START", fontsize = 7, weight = "bold")
+            elif (grid[i][j].is_entry_exit == "exit"):
+                ax.text(j*maze.cell_size, i*maze.cell_size, "END", fontsize = 7, weight = "bold")
+
+            if (grid[i][j].walls["top"] == True):
+                ax.plot([j*maze.cell_size, (j+1)*maze.cell_size],
+                    [i*maze.cell_size, i*maze.cell_size], color = "k")
+            if (grid[i][j].walls["right"] == True):
+                ax.plot([(j+1)*maze.cell_size, (j+1)*maze.cell_size],
+                    [i*maze.cell_size, (i+1)*maze.cell_size], color = "k")
+            if (grid[i][j].walls["bottom"] == True):
+                ax.plot([(j+1)*maze.cell_size, j*maze.cell_size],
+                    [(i+1)*maze.cell_size, (i+1)*maze.cell_size], color = "k")
+            if (grid[i][j].walls["left"] == True):
+                ax.plot([j*maze.cell_size, j*maze.cell_size],
+                    [(i+1)*maze.cell_size, i*maze.cell_size], color = "k")
+
+    list_of_backtrackers = [path_element[0] for path_element in path if path_element[1]]
+    circle_num = 0      # Counter for coloring of circles
+
+    ax.add_patch(plt.Circle(((path[0][0][1] + 0.5)*maze.cell_size,
+        (path[0][0][0] + 0.5)*maze.cell_size), 0.2*maze.cell_size,
+        fc = (0, circle_num/(len(path) - 2*len(list_of_backtrackers)), 0), alpha = 0.4))
+
+    for i in range(1, len(path)):
+        if (path[i][0] not in list_of_backtrackers and path[i-1][0] not in list_of_backtrackers):
+            circle_num += 1
+            ax.add_patch(plt.Circle(((path[i][0][1] + 0.5)*maze.cell_size,
+                (path[i][0][0] + 0.5)*maze.cell_size), 0.2*maze.cell_size,
+                fc = (0, circle_num/(len(path) - 2*len(list_of_backtrackers)), 0), alpha = 0.4))
 
     if (save_filename is not None):
         fig.savefig("{}.png".format(save_filename), frameon = False)
@@ -213,10 +263,13 @@ def animate_maze_solve(maze, grid, path, save_filename = None):
 if (__name__ == "__main__"):
     maze_generator = mz.Maze(10, 10, 1)
     grid, path_gen = maze_generator.generate_maze((0, 0))
+    
     plot_maze(maze_generator, grid)
     anim = animate_maze_generate(maze_generator, path_gen)
 
     path_solve = maze_generator.solve_maze(grid, method = "fancy")
+
+    plot_maze_solution(maze_generator, grid, path_solve)
     anim_solve = animate_maze_solve(maze_generator, grid, path_solve)
 
     plt.show()
