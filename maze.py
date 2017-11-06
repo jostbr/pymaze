@@ -220,7 +220,7 @@ if (__name__ == "__main__"):
     grid, path_gen = maze_generator.generate_maze((0, 0))
     
     maze_viz.plot_maze(maze_generator, grid)
-    #anim_generate = maze_viz.animate_maze_generate(maze_generator, path_gen)
+    anim_generate = maze_viz.animate_maze_generate(maze_generator, path_gen)
     
     path_solve = maze_generator.solve_maze(grid, method = "fancy")
     
