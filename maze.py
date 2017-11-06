@@ -191,7 +191,7 @@ class Maze(object):
         while ((k_curr, l_curr) != exit_indices):     # While there are unvisited cells
             neighbour_indices = self._find_neighbours(k_curr, l_curr)    # Find neighbour indicies
             neighbour_indices = self._validate_neighbours_solve(neighbour_indices, grid, k_curr,
-                l_curr, exit_indices[0], exit_indices[1], method = "fancy")
+                l_curr, exit_indices[0], exit_indices[1], method = method)
 
             if (neighbour_indices is not None):   # If there are unvisited neighbour cells
                 visited_cells.append((k_curr, l_curr))              # Add current cell to stack
@@ -213,12 +213,12 @@ class Maze(object):
 
 
 if (__name__ == "__main__"):
-    maze_generator = Maze(60, 60, 1)
+    maze_generator = Maze(20, 20, 1)
     grid, path_gen = maze_generator.generate_maze((0, 0))
     #maze_viz.plot_maze(maze_generator, grid)
     #anim_generate = maze_viz.animate_maze_generate(maze_generator, path_gen)
 
     path_solve = maze_generator.solve_maze(grid, method = "fancy")
-    anim_solve = maze_viz.animate_maze_solve(maze_generator, grid, path_solve, "anim_solve")
+    anim_solve = maze_viz.animate_maze_solve(maze_generator, grid, path_solve)
 
-    #plt.show()
+    plt.show()
