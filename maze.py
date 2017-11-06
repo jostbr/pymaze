@@ -1,4 +1,7 @@
 
+# Written by: Jostein Brændshøi
+# Last Last modified: 06.11.17
+
 import cell
 import maze_viz
 import random
@@ -213,7 +216,7 @@ class Maze(object):
 
 
 if (__name__ == "__main__"):
-    maze_generator = Maze(15, 15, 1)
+    maze_generator = Maze(10, 10, 1)
     grid, path_gen = maze_generator.generate_maze((0, 0))
     
     maze_viz.plot_maze(maze_generator, grid)

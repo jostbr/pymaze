@@ -1,4 +1,7 @@
 
+# Written by: Jostein Brændshøi
+# Last Last modified: 06.11.17
+
 import maze as mz
 import matplotlib.pyplot as plt
 from matplotlib import animation

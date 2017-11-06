@@ -1,4 +1,7 @@
 
+# Written by: Jostein Brændshøi
+# Last Last modified: 06.11.17
+
 class Cell(object):
     """Class for representing a cell in a 2D grid."""
     def __init__(self, row, col):
