@@ -213,10 +213,10 @@ class Maze(object):
 
 
 if (__name__ == "__main__"):
-    maze_generator = Maze(20, 20, 1)
+    maze_generator = Maze(10, 10, 1)
     grid, path_gen = maze_generator.generate_maze((0, 0))
-    #maze_viz.plot_maze(maze_generator, grid)
-    #anim_generate = maze_viz.animate_maze_generate(maze_generator, path_gen)
+    maze_viz.plot_maze(maze_generator, grid)
+    anim_generate = maze_viz.animate_maze_generate(maze_generator, path_gen)
 
     path_solve = maze_generator.solve_maze(grid, method = "fancy")
     anim_solve = maze_viz.animate_maze_solve(maze_generator, grid, path_solve)

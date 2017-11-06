@@ -5,8 +5,8 @@ from matplotlib import animation
 
 def plot_maze(maze, grid, save_filename = None):
     """Function that plots the generated maze. Also adds indication of entry and exit points."""
-    fig = plt.figure(figsize = (7, 7*maze.num_rows/maze.num_cols), frameon = False, dpi = 100)
-    ax = plt.axes(xlim = (-5, maze.width + 5), ylim = (-5, maze.height + 5))
+    fig = plt.figure(figsize = (7, 7*maze.num_rows/maze.num_cols))
+    ax = plt.axes()
 
     ax.set_aspect("equal")
     #ax.axis("off")
@@ -14,7 +14,7 @@ def plot_maze(maze, grid, save_filename = None):
     ax.axes.get_yaxis().set_visible(False)
     lines = list()
 
-    title_box = ax.text(0, maze.num_rows + maze.cell_size + 0.5,
+    title_box = ax.text(0, maze.num_rows + maze.cell_size + 0.1,
         r"{}$\times${}".format(maze.num_rows, maze.num_cols),
         bbox={"facecolor": "gray", "alpha": 0.5, "pad": 4}, fontname = "serif", fontsize = 15)
 
@@ -38,8 +38,6 @@ def plot_maze(maze, grid, save_filename = None):
                 lines.append(ax.plot([j*maze.cell_size, j*maze.cell_size],
                     [(i+1)*maze.cell_size, i*maze.cell_size], color = "k"))
 
-    fig.tight_layout()
-
     if (save_filename is not None):
         fig.savefig("{}.png".format(save_filename), frameon = False)
 
@@ -57,7 +55,7 @@ def animate_maze_generate(maze, path, save_filename = None):
 
     # Adding indicator to see shere current search is happening.
     indicator = plt.Rectangle((path[0][0]*maze.cell_size, path[0][1]*maze.cell_size),
-        maze.cell_size, maze.cell_size, fc = "purple", alpha = 0.5)
+        maze.cell_size, maze.cell_size, fc = "purple", alpha = 0.6)
     ax.add_patch(indicator)
 
     # Only need to plot right and bottom wall for each cell since walls overlap.
@@ -149,7 +147,7 @@ def animate_maze_solve(maze, grid, path, save_filename = None):
 
     # Adding indicator to see shere current search is happening.
     indicator = plt.Rectangle((path[0][0][0]*maze.cell_size, path[0][0][1]*maze.cell_size),
-        maze.cell_size, maze.cell_size, fc = "purple", alpha = 0.5)
+        maze.cell_size, maze.cell_size, fc = "purple", alpha = 0.6)
     ax.add_patch(indicator)
 
     # Adding squares to animate the path taken to solve the maze. Also adding entry/exit text
@@ -189,7 +187,7 @@ def animate_maze_solve(maze, grid, path, save_filename = None):
     def animate_squares(frame):
         """Function to animate the solved path of the algorithm."""
         if (frame > 0):
-            if (path[frame-1][1] == True):
+            if (path[frame-1][1] == True):  # Color backtracking
                 squares["{},{}".format(path[frame-1][0][0], path[frame-1][0][1])].set_facecolor("orange")
 
             squares["{},{}".format(path[frame-1][0][0], path[frame-1][0][1])].set_visible(True)
@@ -213,12 +211,12 @@ def animate_maze_solve(maze, grid, path, save_filename = None):
     return anim
 
 if (__name__ == "__main__"):
-    maze_generator = mz.Maze(25, 25, 1)
+    maze_generator = mz.Maze(10, 10, 1)
     grid, path_gen = maze_generator.generate_maze((0, 0))
-    #plot_maze(maze_generator, grid)
-    #anim = animate_maze_generate(maze_generator, path_gen)
+    plot_maze(maze_generator, grid)
+    anim = animate_maze_generate(maze_generator, path_gen)
 
-    path_solve = maze_generator.solve_maze(grid)
+    path_solve = maze_generator.solve_maze(grid, method = "fancy")
     anim_solve = animate_maze_solve(maze_generator, grid, path_solve)
 
     plt.show()
