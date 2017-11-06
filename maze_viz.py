@@ -1,0 +1,224 @@
+
+import maze as mz
+import matplotlib.pyplot as plt
+from matplotlib import animation
+
+def plot_maze(maze, grid, save_filename = None):
+    """Function that plots the generated maze. Also adds indication of entry and exit points."""
+    fig = plt.figure(figsize = (7, 7*maze.num_rows/maze.num_cols), frameon = False, dpi = 100)
+    ax = plt.axes(xlim = (-5, maze.width + 5), ylim = (-5, maze.height + 5))
+
+    ax.set_aspect("equal")
+    #ax.axis("off")
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    lines = list()
+
+    title_box = ax.text(0, maze.num_rows + maze.cell_size + 0.5,
+        r"{}$\times${}".format(maze.num_rows, maze.num_cols),
+        bbox={"facecolor": "gray", "alpha": 0.5, "pad": 4}, fontname = "serif", fontsize = 15)
+
+    for i in range(maze.num_rows):
+        for j in range(maze.num_cols):
+            if (grid[i][j].is_entry_exit == "entry"):
+                ax.text(j*maze.cell_size, i*maze.cell_size, "START", fontsize = 7, weight = "bold")
+            elif (grid[i][j].is_entry_exit == "exit"):
+                ax.text(j*maze.cell_size, i*maze.cell_size, "END", fontsize = 7, weight = "bold")
+
+            if (grid[i][j].walls["top"] == True):
+                lines.append(ax.plot([j*maze.cell_size, (j+1)*maze.cell_size],
+                    [i*maze.cell_size, i*maze.cell_size], color = "k"))
+            if (grid[i][j].walls["right"] == True):
+                lines.append(ax.plot([(j+1)*maze.cell_size, (j+1)*maze.cell_size],
+                    [i*maze.cell_size, (i+1)*maze.cell_size], color = "k"))
+            if (grid[i][j].walls["bottom"] == True):
+                lines.append(ax.plot([(j+1)*maze.cell_size, j*maze.cell_size],
+                    [(i+1)*maze.cell_size, (i+1)*maze.cell_size], color = "k"))
+            if (grid[i][j].walls["left"] == True):
+                lines.append(ax.plot([j*maze.cell_size, j*maze.cell_size],
+                    [(i+1)*maze.cell_size, i*maze.cell_size], color = "k"))
+
+    fig.tight_layout()
+
+    if (save_filename is not None):
+        fig.savefig("{}.png".format(save_filename), frameon = False)
+
+def animate_maze_generate(maze, path, save_filename = None):
+    """Function that animates the process of generating the a maze where path is a list
+    of coordinates indicating the path taken to carve out (break down walls) the maze."""
+    fig = plt.figure(figsize = (7, 7*maze.num_rows/maze.num_cols))
+    ax = plt.axes(xlim = (-1, maze.width+1), ylim = (-1, maze.height+1))
+    #ax.set_aspect("equal")
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+
+    lines = dict()
+    squares = dict()
+
+    # Adding indicator to see shere current search is happening.
+    indicator = plt.Rectangle((path[0][0]*maze.cell_size, path[0][1]*maze.cell_size),
+        maze.cell_size, maze.cell_size, fc = "purple", alpha = 0.5)
+    ax.add_patch(indicator)
+
+    # Only need to plot right and bottom wall for each cell since walls overlap.
+    # Also adding squares to animate the path taken to carve out the maze.
+    color_walls = "k"
+    for i in range(maze.num_rows):
+        for j in range(maze.num_cols):
+            lines["{},{}: right".format(i, j)] = ax.plot([(j+1)*maze.cell_size, (j+1)*maze.cell_size],
+                    [i*maze.cell_size, (i+1)*maze.cell_size],
+                linewidth = 2, color = color_walls)[0]
+            lines["{},{}: bottom".format(i, j)] = ax.plot([(j+1)*maze.cell_size, j*maze.cell_size],
+                    [(i+1)*maze.cell_size, (i+1)*maze.cell_size],
+                linewidth = 2, color = color_walls)[0]
+
+            squares["{},{}".format(i, j)] = plt.Rectangle((j*maze.cell_size,
+                i*maze.cell_size), maze.cell_size, maze.cell_size, fc = "red", alpha = 0.4)
+            ax.add_patch(squares["{},{}".format(i, j)])
+
+    # Plotting boundaries of maze.
+    color_boundary = "k"
+    ax.plot([0, maze.width], [maze.height,maze.height], linewidth = 2, color = color_boundary)
+    ax.plot([maze.width, maze.width], [maze.height, 0], linewidth = 2, color = color_boundary)
+    ax.plot([maze.width, 0], [0, 0], linewidth = 2, color = color_boundary)
+    ax.plot([0, 0], [0, maze.height], linewidth = 2, color = color_boundary)
+
+    def animate(frame):
+        """Function to supervise animation of all objects."""
+        animate_walls(frame)
+        animate_squares(frame)
+        animate_indicator(frame)
+        ax.set_title("Step: {}".format(frame + 1), fontname = "serif", fontsize = 19)
+        return []
+
+    def animate_walls(frame):
+        """Function that animates the visibility of the walls between cells."""
+        if (frame > 0):
+            maze.init_grid[path[frame-1][0]][path[frame-1][1]].remove_walls(
+                path[frame][0], path[frame][1])   # Wall between curr and neigh
+            maze.init_grid[path[frame][0]][path[frame][1]].remove_walls(
+                path[frame-1][0], path[frame-1][1])   # Wall between neigh and curr
+
+            current_cell = maze.init_grid[path[frame-1][0]][path[frame-1][1]]
+            next_cell = maze.init_grid[path[frame][0]][path[frame][1]]
+
+            """Function to animate walls between cells as the search goes on."""
+            for wall_key in ["right", "bottom"]:    # Only need to draw two of the four walls (overlap)
+                if (current_cell.walls[wall_key] == False):
+                    lines["{},{}: {}".format(current_cell.row,
+                        current_cell.col, wall_key)].set_visible(False)
+                if (next_cell.walls[wall_key] == False):
+                    lines["{},{}: {}".format(next_cell.row,
+                        next_cell.col, wall_key)].set_visible(False)
+
+        return []
+
+    def animate_squares(frame):
+        """Function to animate the searched path of the algorithm."""
+        squares["{},{}".format(path[frame][0], path[frame][1])].set_visible(False)
+        return []
+
+
+    def animate_indicator(frame):
+        """Function to animate where the current search is happening."""
+        indicator.set_xy((path[frame][1]*maze.cell_size, path[frame][0]*maze.cell_size))
+        return []
+
+    anim = animation.FuncAnimation(fig, animate, frames = len(path),
+        interval = 100, blit = True, repeat = False)
+
+    if (save_filename is not None):
+        mpeg_writer = animation.FFMpegWriter(fps = 24, bitrate = 1000,
+            codec = "libx264", extra_args = ["-pix_fmt", "yuv420p"])
+        anim.save("{}{}x{}.mp4".format(save_filename, maze.num_rows,
+            maze.num_cols), writer = mpeg_writer)
+
+    return anim
+
+def animate_maze_solve(maze, grid, path, save_filename = None):
+    """Function that animates the process of generating the a maze where path is a list
+    of coordinates indicating the path taken to carve out (break down walls) the maze."""
+    fig = plt.figure(figsize = (7, 7*maze.num_rows/maze.num_cols))
+    ax = plt.axes(xlim = (-1, maze.width+1), ylim = (-1, maze.height+1))
+    #ax.set_aspect("equal")
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+
+    lines = dict()
+    squares = dict()
+
+    # Adding indicator to see shere current search is happening.
+    indicator = plt.Rectangle((path[0][0][0]*maze.cell_size, path[0][0][1]*maze.cell_size),
+        maze.cell_size, maze.cell_size, fc = "purple", alpha = 0.5)
+    ax.add_patch(indicator)
+
+    # Adding squares to animate the path taken to solve the maze. Also adding entry/exit text
+    color_walls = "k"
+    for i in range(maze.num_rows):
+        for j in range(maze.num_cols):
+            if (grid[i][j].is_entry_exit == "entry"):
+                ax.text(j*maze.cell_size, i*maze.cell_size, "START", fontsize = 7, weight = "bold")
+            elif (grid[i][j].is_entry_exit == "exit"):
+                ax.text(j*maze.cell_size, i*maze.cell_size, "END", fontsize = 7, weight = "bold")
+
+            if (grid[i][j].walls["top"] == True):
+                lines["{},{}: top".format(i, j)] = ax.plot([j*maze.cell_size, (j+1)*maze.cell_size],
+                        [i*maze.cell_size, i*maze.cell_size], linewidth = 2, color = color_walls)[0]
+            if (grid[i][j].walls["right"] == True):
+                lines["{},{}: right".format(i, j)] = ax.plot([(j+1)*maze.cell_size, (j+1)*maze.cell_size],
+                        [i*maze.cell_size, (i+1)*maze.cell_size], linewidth = 2, color = color_walls)[0]
+            if (grid[i][j].walls["bottom"] == True):
+                lines["{},{}: bottom".format(i, j)] = ax.plot([(j+1)*maze.cell_size, j*maze.cell_size],
+                        [(i+1)*maze.cell_size, (i+1)*maze.cell_size], linewidth = 2, color = color_walls)[0]
+            if (grid[i][j].walls["left"] == True):
+                lines["{},{}: left".format(i, j)] = ax.plot([j*maze.cell_size, j*maze.cell_size],
+                        [(i+1)*maze.cell_size, i*maze.cell_size], linewidth = 2, color = color_walls)[0]
+
+            squares["{},{}".format(i, j)] = plt.Rectangle((j*maze.cell_size,
+                i*maze.cell_size), maze.cell_size, maze.cell_size,
+                fc = "red", alpha = 0.4, visible = False)
+            ax.add_patch(squares["{},{}".format(i, j)])
+
+    def animate(frame):
+        """Function to supervise animation of all objects."""
+        animate_squares(frame)
+        animate_indicator(frame)
+        ax.set_title("Step: {}".format(frame + 1), fontname = "serif", fontsize = 19)
+        return []
+
+    def animate_squares(frame):
+        """Function to animate the solved path of the algorithm."""
+        if (frame > 0):
+            if (path[frame-1][1] == True):
+                squares["{},{}".format(path[frame-1][0][0], path[frame-1][0][1])].set_facecolor("orange")
+
+            squares["{},{}".format(path[frame-1][0][0], path[frame-1][0][1])].set_visible(True)
+            squares["{},{}".format(path[frame][0][0], path[frame][0][1])].set_visible(False)
+        return []
+
+    def animate_indicator(frame):
+        """Function to animate where the current search is happening."""
+        indicator.set_xy((path[frame][0][1]*maze.cell_size, path[frame][0][0]*maze.cell_size))
+        return []
+
+    anim = animation.FuncAnimation(fig, animate, frames = len(path),
+        interval = 100, blit = True, repeat = False)
+
+    if (save_filename is not None):
+        mpeg_writer = animation.FFMpegWriter(fps = 24, bitrate = 1000,
+            codec = "libx264", extra_args = ["-pix_fmt", "yuv420p"])
+        anim.save("{}{}x{}.mp4".format(save_filename, maze.num_rows,
+            maze.num_cols), writer = mpeg_writer)
+
+    return anim
+
+if (__name__ == "__main__"):
+    maze_generator = mz.Maze(25, 25, 1)
+    grid, path_gen = maze_generator.generate_maze((0, 0))
+    #plot_maze(maze_generator, grid)
+    #anim = animate_maze_generate(maze_generator, path_gen)
+
+    path_solve = maze_generator.solve_maze(grid)
+    anim_solve = animate_maze_solve(maze_generator, grid, path_solve)
+
+    plt.show()
