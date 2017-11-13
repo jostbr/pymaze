@@ -73,7 +73,6 @@ class Maze(object):
         function implements two methods for choosing next cell; one is 'brute-force' where one
         of the neighbours are chosen randomly. The other is 'fancy' where the next cell is chosen
         based on which neighbour that gives the shortest distance to the final destination."""
-
         if (method == "fancy"):
             neigh_list = list()
             min_dist_to_target = 100000
@@ -125,14 +124,14 @@ class Maze(object):
     def generate_maze(self, start_coor = (0, 0)):
         """Function that implements the depth-first recursive bactracker maze genrator
         algorithm. Hopfully will return a 2D grid of Cell objects that is the resulting maze."""
-        grid = copy.deepcopy(self.init_grid)
+        grid = self.generate_grid()
         k_curr, l_curr = start_coor             # Where to start generating
         path = [(k_curr, l_curr)]               # To track path of solution
         grid[k_curr][l_curr].visited = True     # Set initial cell to visited
         visit_counter = 1                       # To count number of visited cells
         visited_cells = list()                  # Stack of visited cells for backtracking
         
-        print("\nGenerating the maze...")
+        print("\nGenerating the maze with depth-first search...")
         time_start = time.clock()
         
         while (visit_counter < self.grid_size):     # While there are unvisited cells
@@ -154,58 +153,50 @@ class Maze(object):
                 k_curr, l_curr = visited_cells.pop()      # Pop previous visited cell (backtracking)
                 path.append((k_curr, l_curr))   # Add coordinates to part of generation path
 
-        entry_indices = self._pick_random_entry_exit(None)     # Entry location cell of maze
-        exit_indices = self._pick_random_entry_exit(entry_indices)      # Exit location cell of maze
-        grid[entry_indices[0]][entry_indices[1]].set_as_entry_exit("entry",
-            self.num_rows-1, self.num_cols-1)
-        grid[exit_indices[0]][exit_indices[1]].set_as_entry_exit("exit",
-            self.num_rows-1, self.num_cols-1)
-
         print("Number of moves performed: {}".format(len(path)))
         print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
 
-        return grid, path
+        entry_coor = self._pick_random_entry_exit(None)     # Entry location cell of maze
+        exit_coor = self._pick_random_entry_exit(entry_coor)      # Exit location cell of maze
+        grid[entry_coor[0]][entry_coor[1]].set_as_entry_exit("entry",
+            self.num_rows-1, self.num_cols-1)
+        grid[exit_coor[0]][exit_coor[1]].set_as_entry_exit("exit",
+            self.num_rows-1, self.num_cols-1)
 
-    def solve_maze(self, grid, method = "fancy"):
+        for i in range(self.num_rows):
+            for j in range(self.num_cols):
+                grid[i][j].visited = False      # Set all cells to unvisited before returning grid
+
+        return grid, entry_coor, exit_coor, path
+
+    def solve_dfs(self, grid, entry_coor, exit_coor, method = "fancy"):
         """Function that implements the depth-first recursive bactracker algorithm for
         solving the maze, i.e. starting at the entry point and searching for the exit.
         The main difference from the generator algorithm is that we can't go through
         walls and thus need to implement a proper path-finding algorithm."""
-
-        # Locate start and end coordinate of maze and make sure all cells are unvisited
-        for i in range(self.num_rows):
-            for j in range(self.num_cols):
-                grid[i][j].visited = False      # Set all cells to unvisited
-
-                if (grid[i][j].is_entry_exit == "entry"):
-                    entry_indices = (i, j)
-
-                elif (grid[i][j].is_entry_exit == "exit"):
-                    exit_indices = (i, j)
-
-        k_curr, l_curr = entry_indices          # Where to start generating
-        path = list()                           # To track path of solution and backtracking cells
+        k_curr, l_curr = entry_coor             # Where to start searching
         grid[k_curr][l_curr].visited = True     # Set initial cell to visited
         visited_cells = list()                  # Stack of visited cells for backtracking
+        path = list()                           # To track path of solution and backtracking cells
 
-        print("\nSolving the maze...")
+        print("\nSolving the maze with depth-first search...")
         time_start = time.clock()
         
-        while ((k_curr, l_curr) != exit_indices):     # While there are unvisited cells
+        while ((k_curr, l_curr) != exit_coor):     # While the exit cell has not been encountered
             neighbour_indices = self._find_neighbours(k_curr, l_curr)    # Find neighbour indicies
             neighbour_indices = self._validate_neighbours_solve(neighbour_indices, grid, k_curr,
-                l_curr, exit_indices[0], exit_indices[1], method = method)
+                l_curr, exit_coor[0], exit_coor[1], method = method)
 
             if (neighbour_indices is not None):   # If there are unvisited neighbour cells
                 visited_cells.append((k_curr, l_curr))              # Add current cell to stack
-                path.append(((k_curr, l_curr), False))  # Add coordinates to part of generation path
+                path.append(((k_curr, l_curr), False))  # Add coordinates to part of search path
                 k_next, l_next = random.choice(neighbour_indices)   # Choose random neighbour
                 grid[k_next][l_next].visited = True                 # Move to that neighbour
                 k_curr = k_next
                 l_curr = l_next
 
             elif (len(visited_cells) > 0):  # If there are no unvisited neighbour cells
-                path.append(((k_curr, l_curr), True))   # Add coordinates to part of generation path
+                path.append(((k_curr, l_curr), True))   # Add coordinates to part of search path
                 k_curr, l_curr = visited_cells.pop()    # Pop previous visited cell (backtracking)
 
         path.append(((k_curr, l_curr), False))  # Append final location to path
@@ -214,17 +205,116 @@ class Maze(object):
 
         return path
 
+    def solve_bfs(self, grid, entry_coor, exit_coor, method = "brute-force"):
+        """Function that implements the breadth-first algorithm for solving the maze. This means that
+        for each iteration in the outer loop, the search visits one cell in all possible branches. Then
+        moves on to the next level of cells in each branch to continue the search."""
+        current_level = [entry_coor]               # Stack of cells at current level of search
+        path = list()                              # To track path of solution cell coordinates
+
+        print("\nSolving the maze with breadth-frist search...")
+        time_start = time.clock()
+        
+        while (True):   # Loop until return statement is encuntered
+            next_level = list()
+
+            while (current_level):                      # While still cells left to search on current level
+                k_curr, l_curr = current_level.pop(0)   # Search one cell on the current level
+                grid[k_curr][l_curr].visited = True     # Mark current cell as visited
+                path.append(((k_curr, l_curr), False))  # Append current cell to total search path
+
+                if ((k_curr, l_curr) == exit_coor):     # Exit if current cell is exit cell
+                    print("Number of moves performed: {}".format(len(path)))
+                    print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
+                    return path
+                
+                neighbour_coors = self._find_neighbours(k_curr, l_curr)    # Find neighbour indicies
+                neighbour_coors = self._validate_neighbours_solve(neighbour_coors, grid, k_curr,
+                    l_curr, exit_coor[0], exit_coor[1], method = method)   # Find real neighbours
+
+                if (neighbour_coors is not None):
+                    for coor in neighbour_coors:
+                        next_level.append(coor)     # Add all existing real neighbours to next search level
+
+            for cell in next_level:
+                current_level.append(cell)  # Update current_level list with cells for nex search level
+
+    def solve_bidirect_dfs(self, grid, entry_coor, exit_coor, method = "brute-force"):
+        """Function that implements a bidirectional depth-first recursive bactracker algorithm for
+        solving the maze, i.e. starting at the entry point and exit points where each search searches
+        for the other search path. NOTE: THE FUNCTION ENDS IN AN INFINITE LOOP FOR SOME RARE CASES OF
+        THE INPUT MAZE. WILL BE FIXED IN FUTURE."""
+        print(entry_coor, exit_coor)
+        k_curr, l_curr = entry_coor            # Where to start the first search
+        p_curr, q_curr = exit_coor             # Where to start the second search
+        grid[k_curr][l_curr].visited = True    # Set initial cell to visited
+        grid[p_curr][q_curr].visited = True    # Set final cell to visited
+        backtrack_kl = list()                  # Stack of visited cells for backtracking
+        backtrack_pq = list()                  # Stack of visited cells for backtracking
+        path_kl = list()                       # To track path of solution and backtracking cells
+        path_pq = list()                       # To track path of solution and backtracking cells
+
+        print("\nSolving the maze with bidirectional depth-first search...")
+        time_start = time.clock()
+        
+        while (True):   # Loop until return statement is encountered
+            neighbours_kl = self._find_neighbours(k_curr, l_curr)    # Find neighbours for first search
+            real_neighbours_kl = [neigh for neigh in neighbours_kl if not grid[k_curr][l_curr].is_walls_between(grid[neigh[0]][neigh[1]])]
+            neighbours_kl = [neigh for neigh in real_neighbours_kl if not grid[neigh[0]][neigh[1]].visited]
+
+            neighbours_pq = self._find_neighbours(p_curr, q_curr)    # Find neighbours for second search
+            real_neighbours_pq = [neigh for neigh in neighbours_pq if not grid[p_curr][q_curr].is_walls_between(grid[neigh[0]][neigh[1]])]
+            neighbours_pq = [neigh for neigh in real_neighbours_pq if not grid[neigh[0]][neigh[1]].visited]
+
+            if (len(neighbours_kl) > 0):   # If there are unvisited neighbour cells
+                backtrack_kl.append((k_curr, l_curr))              # Add current cell to stack
+                path_kl.append(((k_curr, l_curr), False))          # Add coordinates to part of search path
+                k_next, l_next = random.choice(neighbours_kl)      # Choose random neighbour
+                grid[k_next][l_next].visited = True                # Move to that neighbour
+                k_curr = k_next
+                l_curr = l_next
+
+            elif (len(backtrack_kl) > 0):                  # If there are no unvisited neighbour cells
+                path_kl.append(((k_curr, l_curr), True))   # Add coordinates to part of search path
+                k_curr, l_curr = backtrack_kl.pop()        # Pop previous visited cell (backtracking)
+
+            if (len(neighbours_pq) > 0):                        # If there are unvisited neighbour cells
+                backtrack_pq.append((p_curr, q_curr))           # Add current cell to stack
+                path_pq.append(((p_curr, q_curr), False))       # Add coordinates to part of search path
+                p_next, q_next = random.choice(neighbours_pq)   # Choose random neighbour
+                grid[p_next][q_next].visited = True             # Move to that neighbour
+                p_curr = p_next
+                q_curr = q_next
+
+            elif (len(backtrack_pq) > 0):                  # If there are no unvisited neighbour cells
+                path_pq.append(((p_curr, q_curr), True))   # Add coordinates to part of search path
+                p_curr, q_curr = backtrack_pq.pop()        # Pop previous visited cell (backtracking)
+
+            # Exit loop and return path if any opf the kl neighbours are in path_pq.
+            if (any((True for n_kl in real_neighbours_kl if (n_kl, False) in path_pq))):
+                path_kl.append(((k_curr, l_curr), False))
+                path = [p_el for p_tuple in zip(path_kl, path_pq) for p_el in p_tuple]  # Zip paths
+                print("Number of moves performed: {}".format(len(path)))
+                print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
+                return path
+
+            # Exit loop and return path if any opf the pq neighbours are in path_kl.
+            elif (any((True for n_pq in real_neighbours_pq if (n_pq, False) in path_kl))):
+                path_pq.append(((p_curr, q_curr), False))
+                path = [p_el for p_tuple in zip(path_kl, path_pq) for p_el in p_tuple]  # Zip paths
+                print("Number of moves performed: {}".format(len(path)))
+                print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
+                return path
 
 if (__name__ == "__main__"):
     maze_generator = Maze(10, 10, 1)
-    grid, path_gen = maze_generator.generate_maze((0, 0))
-    
+    grid, entry, exit, path_gen = maze_generator.generate_maze((0, 0))
+    path_solve = maze_generator.solve_dfs(grid, entry, exit)
+    #path_solve = maze_generator.solve_bfs(grid, entry, exit)
+    #path_solve = maze_generator.solve_bidirect_dfs(grid, entry, exit)
     maze_viz.plot_maze(maze_generator, grid)
-    anim_generate = maze_viz.animate_maze_generate(maze_generator, path_gen)
-    
-    path_solve = maze_generator.solve_maze(grid, method = "fancy")
-    
     maze_viz.plot_maze_solution(maze_generator, grid, path_solve)
+    anim_generate = maze_viz.animate_maze_generate(maze_generator, path_gen)
     anim_solve = maze_viz.animate_maze_solve(maze_generator, grid, path_solve)
 
     plt.show()

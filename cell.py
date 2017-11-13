@@ -40,7 +40,7 @@ class Cell(object):
 
     def set_as_entry_exit(self, entry_exit, row_limit, col_limit):
         """Function that sets the cell as an entry/exit cell by
-        disabling the outer boundayr wall."""
+        disabling the outer boundary wall."""
         if (self.row == 0):
             self.walls["top"] = False
         elif (self.row == row_limit):

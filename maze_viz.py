@@ -253,7 +253,7 @@ def animate_maze_solve(maze, grid, path, save_filename = None):
         return []
 
     anim = animation.FuncAnimation(fig, animate, frames = len(path),
-        interval = 100, blit = True, repeat = False)
+        interval = 50, blit = True, repeat = False)
 
     if (save_filename is not None):
         mpeg_writer = animation.FFMpegWriter(fps = 24, bitrate = 1000,
@@ -265,14 +265,13 @@ def animate_maze_solve(maze, grid, path, save_filename = None):
 
 if (__name__ == "__main__"):
     maze_generator = mz.Maze(10, 10, 1)
-    grid, path_gen = maze_generator.generate_maze((0, 0))
-    
+    grid, entry, exit, path_gen = maze_generator.generate_maze((0, 0))
+    path_solve = maze_generator.solve_dfs(grid, entry, exit)
+    #path_solve = maze_generator.solve_bfs(grid, entry, exit)
+    #path_solve = maze_generator.solve_bidirect_dfs(grid, entry, exit)
     plot_maze(maze_generator, grid)
-    anim = animate_maze_generate(maze_generator, path_gen)
-
-    path_solve = maze_generator.solve_maze(grid, method = "fancy")
-
     plot_maze_solution(maze_generator, grid, path_solve)
+    anim_generate = animate_maze_generate(maze_generator, path_gen)
     anim_solve = animate_maze_solve(maze_generator, grid, path_solve)
 
     plt.show()
