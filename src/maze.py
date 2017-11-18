@@ -2,13 +2,15 @@
 # Written by: Jostein Brændshøi
 # Last Last modified: 06.11.17
 
-import cell as cell
 import random
 import math
 import copy
 import time
 import matplotlib.pyplot as plt
 from matplotlib import animation
+
+from src.cell import Cell
+
 
 class Maze(object):
     """Class representing a maze; a 2D grid of Cell objects. Contains functions

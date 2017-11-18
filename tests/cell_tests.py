@@ -1,6 +1,6 @@
+from __future__ import absolute_import
 import unittest
-import cell as singlecell
-
+from src.cell import Cell as singlecell
 
 class TestCell(unittest.TestCase):
     def test_ctor(self):
