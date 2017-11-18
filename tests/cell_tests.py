@@ -1,5 +1,5 @@
 import unittest
-from cell import Cell
+import cell as Cell
 
 
 class test_cell(unittest.TestCase):
