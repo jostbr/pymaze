@@ -8,7 +8,6 @@ import copy
 import time
 import matplotlib.pyplot as plt
 from matplotlib import animation
-
 from src.cell import Cell
 
 
@@ -33,7 +32,7 @@ class Maze(object):
             grid.append(list())
 
             for j in range(self.num_cols):
-                grid[i].append(cell.Cell(i, j))
+                grid[i].append(Cell(i, j))
 
         return grid
 
@@ -125,7 +124,7 @@ class Maze(object):
 
     def generate_maze(self, start_coor = (0, 0)):
         """Function that implements the depth-first recursive bactracker maze genrator
-        algorithm. Hopfully will return a 2D grid of Cell objects that is the resulting maze."""
+        algorithm. Hopefully will return a 2D grid of Cell objects that is the resulting maze."""
         grid = copy.deepcopy(self.init_grid)
         k_curr, l_curr = start_coor             # Where to start generating
         path = [(k_curr, l_curr)]               # To track path of solution

@@ -1,12 +1,15 @@
+from __future__ import absolute_import
 import unittest
-import maze as mazegen
+from src.maze import Maze
 
 
 def generate_maze():
+    # Used to generate a 5x5 maze for testing, Feel free to modify as needed
+
     cols = 5
     rows = 5
     cell_size = 1
-    return mazegen.Maze(rows, cols, cell_size)
+    return Maze(rows, cols, cell_size)
 
 
 class TestMaze(unittest.TestCase):
@@ -15,7 +18,7 @@ class TestMaze(unittest.TestCase):
         cols = 5
         rows = 5
         cell_size = 1
-        maze = mazegen.Maze(rows, cols, cell_size)
+        maze = Maze(rows, cols, cell_size)
 
         self.assertEqual(maze.num_cols, cols)
         self.assertEqual(maze.num_rows, rows)
@@ -24,13 +27,12 @@ class TestMaze(unittest.TestCase):
         self.assertEqual(maze.height, rows*cell_size)
         self.assertEqual(maze.width, cols*cell_size)
 
-
     def test_generate_grid(self):
         maze = generate_maze()
         grid = maze.generate_grid()
 
         self.assertEqual(len(grid), maze.num_cols)
-        self.assertGreater(len(grid), 0)
+        self.assertGreater(len(grid), 2)
         self.assertEqual(len(grid[0]), maze.num_rows)
 
 if (__name__ == "__main__"):

@@ -2,6 +2,7 @@
 # Written by: Jostein Brændshøi
 # Last Last modified: 06.11.17
 
+
 class Cell(object):
     """Class for representing a cell in a 2D grid."""
     def __init__(self, row, col):
@@ -29,16 +30,16 @@ class Cell(object):
 
     def remove_walls(self, neighbour_row, neighbour_col):
         """Function that removes walls between neighbour cell given by indices in grid."""
-        if (self.row - neighbour_row == 1):
+        if self.row - neighbour_row == 1:
             self.walls["top"] = False
-            return (True, "");
-        elif (self.row - neighbour_row == -1):
+            return (True, "")
+        elif self.row - neighbour_row == -1:
             self.walls["bottom"] = False
             return True
-        elif (self.col - neighbour_col == 1):
+        elif self.col - neighbour_col == 1:
             self.walls["left"] = False
             return True
-        elif (self.col - neighbour_col == -1):
+        elif self.col - neighbour_col == -1:
             self.walls["right"] = False
             return True
 
@@ -48,13 +49,13 @@ class Cell(object):
         First, we check if the entrance/exit is on the top row. Next, we check if it should
         be on the bottom row. Finally, we check if it is on the left wall or the bottom row.
         """
-        if (self.row == 0):
+        if self.row == 0:
             self.walls["top"] = False
-        elif (self.row == row_limit):
+        elif self.row == row_limit:
             self.walls["bottom"] = False
-        elif (self.col == 0):
+        elif self.col == 0:
             self.walls["left"] = False
-        elif (self.col == col_limit):
+        elif self.col == col_limit:
             self.walls["right"] = False
 
         self.is_entry_exit = entry_exit
