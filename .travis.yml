@@ -2,6 +2,9 @@ language: python
 python:
     - "3.5"
 
+before_install:
+    - "chmod +x tests/cell_tests.py"
+  
 install:
     -  "pip install -r requirements.txt"
     
