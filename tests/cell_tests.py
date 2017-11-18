@@ -2,7 +2,7 @@ import unittest
 import cell as Cell
 
 
-class test_cell(unittest.TestCase):
+class TestCell(unittest.TestCase):
     def test_ctor(self):
         """Make sure that the constructor values are getting properly set."""
 
