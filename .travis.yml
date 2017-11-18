@@ -6,4 +6,4 @@ install:
     -  "pip install -r requirements.txt"
     
 script:
-    - "/tests/pytest/cell_tests.py"
+    - "/tests/cell_tests.py"
