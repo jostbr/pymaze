@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/jostbr/MazeGenerator.svg?branch=master)](https://travis-ci.org/ThomasThelen/MazeGenerator)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/<ADD_HASH_HERE>/test_coverage)](https://codeclimate.com/github/jostbr/MazeGenerator/test_coverage)
+<a href="https://codeclimate.com/github/jostbr/MazeGenerator/maintainability">
+  <img src="https://api.codeclimate.com/v1/badges/<ADD_HASH_HERE>/maintainability" /></a>
+
 # Maze generator and solver
 Python scripts for generating random solvable mazes using the depth-first search and recursive backtracking algorithms. The code also implements a recursive backtracking pathfinding algorithm for solving the generated mazes. Here is an example of a generated maze and its computed solution.  
 
