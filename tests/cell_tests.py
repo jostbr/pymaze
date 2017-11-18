@@ -6,7 +6,7 @@ class test_cell(unittest.TestCase):
     def test_ctor(self):
         """Make sure that the constructor values are getting properly set."""
 
-        cell = Cell(2, 2)
+        cell = Cell.Cell(2, 2)
         self.assertEqual(cell.row, 2)
         self.assertEqual(cell.col, 2)
         self.assertEqual(cell.visited, False)
@@ -19,7 +19,7 @@ class test_cell(unittest.TestCase):
         """Test the Cell::entry_exit method"""
 
         # Check if the entrance/exit is on the top row.
-        cell = Cell(0, 1)
+        cell = Cell.Cell(0, 1)
         cell.set_as_entry_exit(True, 3, 3)
         self.assertEqual(cell.is_entry_exit, True)
         self.assertEqual(cell.walls["top"], False)
@@ -29,41 +29,41 @@ class test_cell(unittest.TestCase):
         self.assertEqual(cell.walls["top"], False)
 
         # Check if the entrance/exit is on the bottom row.
-        cell = Cell(1, 0)
+        cell = Cell.Cell(1, 0)
         cell.set_as_entry_exit(True, 1, 0)
         self.assertEqual(cell.walls["bottom"], False)
         self.assertEqual(cell.is_entry_exit, True)
 
         # Check if the entrance/exit is on the left wall.
-        cell = Cell(2, 0)
+        cell = Cell.Cell(2, 0)
         cell.set_as_entry_exit(True, 3, 1)
         self.assertEqual(cell.walls["left"], False)
         cell.set_as_entry_exit(True, 1, 1)
 
         # Check if the entrance/exit is on the right side wall.
-        cell = Cell(2, 2)
+        cell = Cell.Cell(2, 2)
         cell.set_as_entry_exit(True, 2, 2)
         self.assertEqual(cell.walls["right"], False)
 
     def test_remove_walls(self):
         """Test the Cell::remove_walls method"""
         # Remove the cell to the right
-        cell = Cell(0, 0);
+        cell = Cell.Cell(0, 0);
         cell.remove_walls(0,1)
         self.assertEqual(cell.walls["right"], False)
 
         # Remove the cell to the left
-        cell = Cell(0, 1)
+        cell = Cell.Cell(0, 1)
         cell.remove_walls(1, 0)
         self.assertEqual(cell.walls["left"], False)
 
         # Remove the cell above
-        cell = Cell(1, 1)
+        cell = Cell.Cell(1, 1)
         cell.remove_walls(0, 1)
         self.assertEqual(cell.walls["top"], False)
 
         # Remove the cell below
-        cell = Cell(1, 1)
+        cell = Cell.Cell(1, 1)
         cell.remove_walls(2, 1)
         self.assertEqual(cell.walls["bottom"], False)
 
@@ -75,26 +75,26 @@ class test_cell(unittest.TestCase):
         """
 
         # We should have walls on all sides of a new cell
-        cell = Cell (0, 0);
+        cell = Cell.Cell (0, 0);
         self.assertEqual(cell.walls, {"top": True, "right": True, "bottom": True, "left": True})
 
         # Remove the wall to the right
-        cell2 = Cell(1, 0);
+        cell2 = Cell.Cell(1, 0);
         cell2.remove_walls(1, 2)
         self.assertEqual(cell.walls, {"top": True, "right": False, "bottom": True, "left": True})
 
         # Remove the wall to the left
-        cell3 = Cell(0, 2);
+        cell3 = Cell.Cell(0, 2);
         cell3.remove_walls(0, 1)
         self.assertEqual(cell.walls, {"top": True, "right": True, "bottom": True, "left": False})
 
         # Remove the wall on the top
-        cell4 = Cell(1, 2);
+        cell4 = Cell.Cell(1, 2);
         cell4.remove_walls(0, 2)
         self.assertEqual(cell.walls, {"top": False, "right": True, "bottom": True, "left": True})
 
         # Remove the wall on the bottom
-        cell5 = Cell(2, 2);
+        cell5 = Cell.Cell(2, 2);
         cell5.remove_walls(3, 2)
         self.assertEqual(cell.walls, {"top": True, "right": True, "bottom": False, "left": True})
 
