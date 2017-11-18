@@ -9,5 +9,4 @@ install:
     -  "pip install -r requirements.txt"
     
 script:
-    - "cd tests"
-    - "python -m unittest cell_tests.py"
+    - "python -m unittest tests/cell_tests.py"
