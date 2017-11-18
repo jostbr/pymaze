@@ -6,20 +6,8 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 
 
-def plot_maze(maze, grid, save_filename = None):
-    """Function that plots the generated maze. Also adds indication of entry and exit points."""
-    fig = plt.figure(figsize = (7, 7*maze.num_rows/maze.num_cols))
-    ax = plt.axes()
-
-    ax.set_aspect("equal")
-    #ax.axis("off")
-    ax.axes.get_xaxis().set_visible(False)
-    ax.axes.get_yaxis().set_visible(False)
-
-    title_box = ax.text(0, maze.num_rows + maze.cell_size + 0.1,
-        r"{}$\times${}".format(maze.num_rows, maze.num_cols),
-        bbox={"facecolor": "gray", "alpha": 0.5, "pad": 4}, fontname = "serif", fontsize = 15)
-
+def plot_walls(maze, grid, ax):
+    """ Plots the walls of the maze. This is used when generating the maze image"""
     for i in range(maze.num_rows):
         for j in range(maze.num_cols):
             if (grid[i][j].is_entry_exit == "entry"):
@@ -40,43 +28,41 @@ def plot_maze(maze, grid, save_filename = None):
                 ax.plot([j*maze.cell_size, j*maze.cell_size],
                     [(i+1)*maze.cell_size, i*maze.cell_size], color = "k")
 
-    if (save_filename is not None):
+
+def configure_plot(maze):
+    """Sets the initial properties of the maze image"""
+    fig = plt.figure(figsize = (7, 7*maze.num_rows/maze.num_cols))
+    ax = plt.axes()
+
+    ax.set_aspect("equal")
+    #ax.axis("off")
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+
+    title_box = ax.text(0, maze.num_rows + maze.cell_size + 0.1,
+        r"{}$\times${}".format(maze.num_rows, maze.num_cols),
+        bbox={"facecolor": "gray", "alpha": 0.5, "pad": 4}, fontname = "serif", fontsize = 15)
+
+    return ax, fig
+
+
+def plot_maze(maze, grid, save_filename = None):
+    """Function that plots the generated maze. Also adds indication of entry and exit points."""
+
+    ax, fig = configure_plot(maze)
+
+    plot_walls(maze, grid, ax)
+
+    if save_filename is not None:
         fig.savefig("{}.png".format(save_filename), frameon = False)
 
 
 def plot_maze_solution(maze, grid, path, save_filename = None):
     """Function that plots the generated maze. Also adds indication of entry and exit points."""
-    fig = plt.figure(figsize = (7, 7*maze.num_rows/maze.num_cols))
-    ax = plt.axes()
 
-    ax.set_aspect("equal")
-    #ax.axis("off")
-    ax.axes.get_xaxis().set_visible(False)
-    ax.axes.get_yaxis().set_visible(False)
+    ax, fig = configure_plot(maze)
 
-    title_box = ax.text(0, maze.num_rows + maze.cell_size + 0.1,
-        r"{}$\times${}".format(maze.num_rows, maze.num_cols),
-        bbox={"facecolor": "gray", "alpha": 0.5, "pad": 4}, fontname = "serif", fontsize = 15)
-
-    for i in range(maze.num_rows):
-        for j in range(maze.num_cols):
-            if (grid[i][j].is_entry_exit == "entry"):
-                ax.text(j*maze.cell_size, i*maze.cell_size, "START", fontsize = 7, weight = "bold")
-            elif (grid[i][j].is_entry_exit == "exit"):
-                ax.text(j*maze.cell_size, i*maze.cell_size, "END", fontsize = 7, weight = "bold")
-
-            if (grid[i][j].walls["top"] == True):
-                ax.plot([j*maze.cell_size, (j+1)*maze.cell_size],
-                    [i*maze.cell_size, i*maze.cell_size], color = "k")
-            if (grid[i][j].walls["right"] == True):
-                ax.plot([(j+1)*maze.cell_size, (j+1)*maze.cell_size],
-                    [i*maze.cell_size, (i+1)*maze.cell_size], color = "k")
-            if (grid[i][j].walls["bottom"] == True):
-                ax.plot([(j+1)*maze.cell_size, j*maze.cell_size],
-                    [(i+1)*maze.cell_size, (i+1)*maze.cell_size], color = "k")
-            if (grid[i][j].walls["left"] == True):
-                ax.plot([j*maze.cell_size, j*maze.cell_size],
-                    [(i+1)*maze.cell_size, i*maze.cell_size], color = "k")
+    plot_walls(maze, grid, ax)
 
     list_of_backtrackers = [path_element[0] for path_element in path if path_element[1]]
     circle_num = 0      # Counter for coloring of circles
@@ -101,7 +87,7 @@ def animate_maze_generate(maze, path, save_filename = None):
     of coordinates indicating the path taken to carve out (break down walls) the maze."""
     fig = plt.figure(figsize = (7, 7*maze.num_rows/maze.num_cols))
     ax = plt.axes(xlim = (-1, maze.width+1), ylim = (-1, maze.height+1))
-    #ax.set_aspect("equal")
+
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
 
