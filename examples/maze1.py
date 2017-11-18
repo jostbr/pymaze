@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 from matplotlib import animation
 from src.maze import Maze
 from src.maze_viz import plot_maze, animate_maze_generate, plot_maze_solution, animate_maze_solve

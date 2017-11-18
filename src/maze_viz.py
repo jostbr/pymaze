@@ -173,6 +173,34 @@ def animate_maze_generate(maze, path, save_filename = None):
 
     return anim
 
+def add_path(maze, grid, ax, lines, squares):
+    # Adding squares to animate the path taken to solve the maze. Also adding entry/exit text
+    color_walls = "k"
+    for i in range(maze.num_rows):
+        for j in range(maze.num_cols):
+            if grid[i][j].is_entry_exit == "entry":
+                ax.text(j*maze.cell_size, i*maze.cell_size, "START", fontsize = 7, weight = "bold")
+            elif grid[i][j].is_entry_exit == "exit":
+                ax.text(j*maze.cell_size, i*maze.cell_size, "END", fontsize = 7, weight = "bold")
+
+            if grid[i][j].walls["top"]:
+                lines["{},{}: top".format(i, j)] = ax.plot([j*maze.cell_size, (j+1)*maze.cell_size],
+                        [i*maze.cell_size, i*maze.cell_size], linewidth = 2, color = color_walls)[0]
+            if grid[i][j].walls["right"]:
+                lines["{},{}: right".format(i, j)] = ax.plot([(j+1)*maze.cell_size, (j+1)*maze.cell_size],
+                        [i*maze.cell_size, (i+1)*maze.cell_size], linewidth = 2, color = color_walls)[0]
+            if grid[i][j].walls["bottom"]:
+                lines["{},{}: bottom".format(i, j)] = ax.plot([(j+1)*maze.cell_size, j*maze.cell_size],
+                        [(i+1)*maze.cell_size, (i+1)*maze.cell_size], linewidth = 2, color = color_walls)[0]
+            if grid[i][j].walls["left"]:
+                lines["{},{}: left".format(i, j)] = ax.plot([j*maze.cell_size, j*maze.cell_size],
+                        [(i+1)*maze.cell_size, i*maze.cell_size], linewidth = 2, color = color_walls)[0]
+
+            squares["{},{}".format(i, j)] = plt.Rectangle((j*maze.cell_size,
+                i*maze.cell_size), maze.cell_size, maze.cell_size,
+                fc = "red", alpha = 0.4, visible = False)
+            ax.add_patch(squares["{},{}".format(i, j)])
+
 
 def animate_maze_solve(maze, grid, path, save_filename = None):
     """Function that animates the process of generating the a maze where path is a list
@@ -191,32 +219,7 @@ def animate_maze_solve(maze, grid, path, save_filename = None):
         maze.cell_size, maze.cell_size, fc = "purple", alpha = 0.6)
     ax.add_patch(indicator)
 
-    # Adding squares to animate the path taken to solve the maze. Also adding entry/exit text
-    color_walls = "k"
-    for i in range(maze.num_rows):
-        for j in range(maze.num_cols):
-            if grid[i][j].is_entry_exit == "entry":
-                ax.text(j*maze.cell_size, i*maze.cell_size, "START", fontsize = 7, weight = "bold")
-            elif grid[i][j].is_entry_exit == "exit":
-                ax.text(j*maze.cell_size, i*maze.cell_size, "END", fontsize = 7, weight = "bold")
-
-            if grid[i][j].walls["top"] == True:
-                lines["{},{}: top".format(i, j)] = ax.plot([j*maze.cell_size, (j+1)*maze.cell_size],
-                        [i*maze.cell_size, i*maze.cell_size], linewidth = 2, color = color_walls)[0]
-            if grid[i][j].walls["right"] == True:
-                lines["{},{}: right".format(i, j)] = ax.plot([(j+1)*maze.cell_size, (j+1)*maze.cell_size],
-                        [i*maze.cell_size, (i+1)*maze.cell_size], linewidth = 2, color = color_walls)[0]
-            if grid[i][j].walls["bottom"] == True:
-                lines["{},{}: bottom".format(i, j)] = ax.plot([(j+1)*maze.cell_size, j*maze.cell_size],
-                        [(i+1)*maze.cell_size, (i+1)*maze.cell_size], linewidth = 2, color = color_walls)[0]
-            if grid[i][j].walls["left"] == True:
-                lines["{},{}: left".format(i, j)] = ax.plot([j*maze.cell_size, j*maze.cell_size],
-                        [(i+1)*maze.cell_size, i*maze.cell_size], linewidth = 2, color = color_walls)[0]
-
-            squares["{},{}".format(i, j)] = plt.Rectangle((j*maze.cell_size,
-                i*maze.cell_size), maze.cell_size, maze.cell_size,
-                fc = "red", alpha = 0.4, visible = False)
-            ax.add_patch(squares["{},{}".format(i, j)])
+    add_path(maze, grid, ax, lines, squares)
 
     def animate(frame):
         """Function to supervise animation of all objects."""
