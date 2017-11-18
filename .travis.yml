@@ -10,4 +10,4 @@ install:
     
 script:
     - "cd tests"
-    - "python -m unittest discover -s ."
+    - "python -m unittest cell_tests.py"
