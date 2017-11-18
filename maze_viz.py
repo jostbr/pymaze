@@ -2,7 +2,6 @@
 # Written by: Jostein Brændshøi
 # Last Last modified: 06.11.17
 
-import maze as mz
 import matplotlib.pyplot as plt
 from matplotlib import animation
 
@@ -263,16 +262,3 @@ def animate_maze_solve(maze, grid, path, save_filename = None):
 
     return anim
 
-if (__name__ == "__main__"):
-    maze_generator = mz.Maze(10, 10, 1)
-    grid, path_gen = maze_generator.generate_maze((0, 0))
-    
-    plot_maze(maze_generator, grid)
-    anim = animate_maze_generate(maze_generator, path_gen)
-
-    path_solve = maze_generator.solve_maze(grid, method = "fancy")
-
-    plot_maze_solution(maze_generator, grid, path_solve)
-    anim_solve = animate_maze_solve(maze_generator, grid, path_solve)
-
-    plt.show()

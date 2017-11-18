@@ -2,8 +2,7 @@
 # Written by: Jostein Brændshøi
 # Last Last modified: 06.11.17
 
-import cell
-import maze_viz
+import cell as cell
 import random
 import math
 import copy
@@ -36,7 +35,7 @@ class Maze(object):
 
         return grid
 
-    def _find_neighbours(self, cell_row, cell_col):
+    def find_neighbours(self, cell_row, cell_col):
         """Function that finds all existing and unvisited neighbours of a cell in the
         grid. Return a list of tuples containing indices for the unvisited neighbours."""
         neighbours = list()
@@ -136,7 +135,7 @@ class Maze(object):
         time_start = time.clock()
         
         while (visit_counter < self.grid_size):     # While there are unvisited cells
-            neighbour_indices = self._find_neighbours(k_curr, l_curr)    # Find neighbour indicies
+            neighbour_indices = self.find_neighbours(k_curr, l_curr)    # Find neighbour indicies
             neighbour_indices = self._validate_neighbours_generate(neighbour_indices, grid)
 
             if (neighbour_indices is not None):   # If there are unvisited neighbour cells
@@ -192,7 +191,7 @@ class Maze(object):
         time_start = time.clock()
         
         while ((k_curr, l_curr) != exit_indices):     # While there are unvisited cells
-            neighbour_indices = self._find_neighbours(k_curr, l_curr)    # Find neighbour indicies
+            neighbour_indices = self.find_neighbours(k_curr, l_curr)    # Find neighbour indicies
             neighbour_indices = self._validate_neighbours_solve(neighbour_indices, grid, k_curr,
                 l_curr, exit_indices[0], exit_indices[1], method = method)
 
@@ -213,18 +212,3 @@ class Maze(object):
         print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
 
         return path
-
-
-if (__name__ == "__main__"):
-    maze_generator = Maze(10, 10, 1)
-    grid, path_gen = maze_generator.generate_maze((0, 0))
-    
-    maze_viz.plot_maze(maze_generator, grid)
-    anim_generate = maze_viz.animate_maze_generate(maze_generator, path_gen)
-    
-    path_solve = maze_generator.solve_maze(grid, method = "fancy")
-    
-    maze_viz.plot_maze_solution(maze_generator, grid, path_solve)
-    anim_solve = maze_viz.animate_maze_solve(maze_generator, grid, path_solve)
-
-    plt.show()
