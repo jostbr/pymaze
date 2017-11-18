@@ -6,8 +6,6 @@ import random
 import math
 import copy
 import time
-import matplotlib.pyplot as plt
-from matplotlib import animation
 from src.cell import Cell
 
 
