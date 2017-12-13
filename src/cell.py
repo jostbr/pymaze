@@ -1,7 +1,4 @@
 
-# Written by: Jostein Brændshøi
-# Last Last modified: 06.11.17
-
 class Cell(object):
     """Class for representing a cell in a 2D grid."""
     def __init__(self, row, col):
@@ -54,7 +51,7 @@ class Cell(object):
             self.walls["top"] = False
         elif self.row == row_limit:
             self.walls["bottom"] = False
-        elif self.col == 0):
+        elif self.col == 0:
             self.walls["left"] = False
         elif self.col == col_limit:
             self.walls["right"] = False

@@ -1,7 +1,4 @@
 
-# Written by: Jostein Brændshøi
-# Last Last modified: 06.11.17
-
 import random
 import math
 import copy
