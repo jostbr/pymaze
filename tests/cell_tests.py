@@ -1,8 +1,9 @@
+from __future__ import absolute_import
 import unittest
-from cell import Cell
+from src.cell import Cell
 
 
-class test_cell(unittest.TestCase):
+class TestCell(unittest.TestCase):
     def test_ctor(self):
         """Make sure that the constructor values are getting properly set."""
 
@@ -41,6 +42,11 @@ class test_cell(unittest.TestCase):
         cell.set_as_entry_exit(True, 1, 1)
 
         # Check if the entrance/exit is on the right side wall.
+        cell = Cell(3, 2)
+        cell.set_as_entry_exit(True, 2, 2)
+        self.assertEqual(cell.walls["right"], False)
+
+        # Check if we can make the exit on the right wall in a corner
         cell = Cell(2, 2)
         cell.set_as_entry_exit(True, 2, 2)
         self.assertEqual(cell.walls["right"], False)
@@ -48,7 +54,7 @@ class test_cell(unittest.TestCase):
     def test_remove_walls(self):
         """Test the Cell::remove_walls method"""
         # Remove the cell to the right
-        cell = Cell(0, 0);
+        cell = Cell(0, 0)
         cell.remove_walls(0,1)
         self.assertEqual(cell.walls["right"], False)
 
@@ -69,35 +75,36 @@ class test_cell(unittest.TestCase):
 
     def test_is_walls_between(self):
         """Test the Cell::is_walls_between method
-
             Note that cells are constructed with neighbors on each side.
             We'll need to remove some walls to get full coverage.
         """
 
         # We should have walls on all sides of a new cell
-        cell = Cell (0, 0);
+        cell = Cell (0, 0)
         self.assertEqual(cell.walls, {"top": True, "right": True, "bottom": True, "left": True})
 
         # Remove the wall to the right
-        cell2 = Cell(1, 0);
+        cell2 = Cell(1, 0)
         cell2.remove_walls(1, 2)
         self.assertEqual(cell.walls, {"top": True, "right": False, "bottom": True, "left": True})
 
         # Remove the wall to the left
-        cell3 = Cell(0, 2);
+        cell3 = Cell(0, 2)
         cell3.remove_walls(0, 1)
         self.assertEqual(cell.walls, {"top": True, "right": True, "bottom": True, "left": False})
 
         # Remove the wall on the top
-        cell4 = Cell(1, 2);
+        cell4 = Cell(1, 2)
         cell4.remove_walls(0, 2)
         self.assertEqual(cell.walls, {"top": False, "right": True, "bottom": True, "left": True})
 
         # Remove the wall on the bottom
-        cell5 = Cell(2, 2);
+        cell5 = Cell(2, 2)
         cell5.remove_walls(3, 2)
         self.assertEqual(cell.walls, {"top": True, "right": True, "bottom": False, "left": True})
 
 
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     unittest.main()
+
+
