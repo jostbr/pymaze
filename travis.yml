@@ -1,0 +1,16 @@
+language: python
+python:
+    - "3.4"
+    - "3.5"
+    - "3.6"
+
+before_install:
+    - "chmod +x tests/cell_tests.py"
+    - "chmod +x tests/maze_tests.py"
+
+install:
+    -  "pip install -r requirements.txt"
+
+script:
+    - "python -m unittest tests/cell_tests.py"
+    - "python -m unittest tests/maze_tests.py"
