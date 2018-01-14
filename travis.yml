@@ -1,5 +1,9 @@
 language: python
 python:
+    - "3.0"
+    - "3.1"
+    - "3.2"
+    - "3.3"
     - "3.4"
     - "3.5"
     - "3.6"
@@ -7,6 +11,9 @@ python:
 before_install:
     - "chmod +x tests/cell_tests.py"
     - "chmod +x tests/maze_tests.py"
+    - "chmod +x tests/maze_manager_tests.py"
+    - "chmod +x tests/maze_viz_tests.py"
+    - "chmod +x tests/solver_tests.py"
 
 install:
     -  "pip install -r requirements.txt"
@@ -14,3 +21,6 @@ install:
 script:
     - "python -m unittest tests/cell_tests.py"
     - "python -m unittest tests/maze_tests.py"
+    - "python -m unittest tests/maze_manager_tests.py"
+    - "python -m unittest tests/maze_viz_tests.py"
+    - "python -m unittest tests/solver_tests.py"

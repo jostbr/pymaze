@@ -3,4 +3,7 @@
 *.jpg
 *.mp4
 .idea
+*.pyc
 __pycache__
+
+
