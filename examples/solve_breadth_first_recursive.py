@@ -1,17 +1,26 @@
 from __future__ import absolute_import
-from matplotlib import pyplot as plt
-from src.maze import Maze
-from src.maze_viz import plot_maze, animate_maze_generate, plot_maze_solution, animate_maze_solve
+from src.maze_manager import MazeManager
 
 
 if __name__ == "__main__":
-    maze_generator = Maze(10, 10, 1)
-    grid, entry, exit, path_gen = maze_generator.generate_maze((0, 0))
-    path_solve = maze_generator.solve_dfs(grid, entry, exit)
 
-    plot_maze(maze_generator, grid)
-    plot_maze_solution(maze_generator, grid, path_solve)
-    anim_generate = animate_maze_generate(maze_generator, path_gen)
-    anim_solve = animate_maze_solve(maze_generator, grid, path_solve)
+    # Create the manager
+    manager = MazeManager()
 
-plt.show()
+    # Add a 10x10 maze to the manager
+    maze = manager.add_maze(10, 10)
+
+    # Solve the maze using the Depth First Backtracker algorithm
+    manager.solve_maze(maze.id, "DepthFirstBacktracker")
+
+    # Display the maze
+    manager.show_maze(maze.id)
+
+    # Show how the maze was generated
+    manager.show_generation_animation(maze.id)
+
+    # Show how the maze was solved
+    manager.show_solution_animation(maze.id)
+
+    # Display the maze with the solution overlaid
+    manager.show_solution(maze.id)

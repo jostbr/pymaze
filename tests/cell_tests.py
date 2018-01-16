@@ -75,6 +75,7 @@ class TestCell(unittest.TestCase):
 
     def test_is_walls_between(self):
         """Test the Cell::is_walls_between method
+
             Note that cells are constructed with neighbors on each side.
             We'll need to remove some walls to get full coverage.
         """
@@ -106,5 +107,3 @@ class TestCell(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-
