@@ -11,7 +11,7 @@ if __name__ == "__main__":
     maze = manager.add_maze(10, 10)
 
     # Solve the maze using the Breadth First algorithm
-    manager.solve_maze(maze.id, "BreadthFirst")
+    manager.solve_maze(maze.id, "DepthFirstBacktracker")
 
     # Display the maze
     manager.show_maze(maze.id)
