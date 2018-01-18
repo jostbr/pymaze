@@ -21,6 +21,9 @@ if __name__ == "__main__":
     maze2 = Maze(10, 10)
     maze2 = manager.add_existing_maze(maze2)
 
+    # We can disable showing any output from the solver by entering quiet mode
+    # manager.set_quiet_mode(True)
+
     # Once we have a maze in the manager, we can tell the manager to solve it with a particular algorithm.
     #manager.solve_maze(maze.id, "BreadthFirst")
     #manager.solve_maze(maze.id, "BiDirectional")

@@ -12,11 +12,13 @@ class MazeManager(object):
     Attributes:
         mazes (list): It is possible to have more than one maze. They are stored inside this variable.
         media_name (string): The filename for animations and images
+        quiet_mode (bool): When true, information is not shown on the console
     """
 
     def __init__(self):
         self.mazes = []
         self.media_name = ""
+        self.quiet_mode = False
 
     def add_maze(self, row, col, id=0):
         """Add a maze to the manager. We give the maze an index of
@@ -116,13 +118,13 @@ class MazeManager(object):
         """DEVNOTE: When adding a new solution method, call it from here.
             Also update the list of names in the documentation above"""
         if method == "DepthFirstBacktracker":
-            solver = DepthFirstBacktracker(maze, neighbor_method)
+            solver = DepthFirstBacktracker(maze, neighbor_method, quiet_mode)
             maze.solution_path = solver.solve()
         elif method == "BiDirectional":
-            solver = BiDirectional(maze, neighbor_method)
+            solver = BiDirectional(maze, neighbor_method, quiet_mode)
             maze.solution_path = solver.solve()
         elif method == "BreadthFirst":
-            solver = BreadthFirst(maze, neighbor_method)
+            solver = BreadthFirst(maze, neighbor_method, quiet_mode)
             maze.solution_path = solver.solve()
 
     def show_maze(self, id, cell_size=1):
@@ -168,3 +170,11 @@ class MazeManager(object):
         """
 
         self.media_name = filename
+
+    def set_quiet_mode(self, enabled):
+        """
+        Enables/Disables the quiet mode
+        Args:
+            enabled (bool): True when quiet mode is on, False when it is off
+        """
+        self.quiet_mode=enabled

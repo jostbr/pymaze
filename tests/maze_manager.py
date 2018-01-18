@@ -14,6 +14,7 @@ class TestMgr(unittest.TestCase):
 
         self.assertEqual(manager.get_maze_count(), 0)
         self.assertEqual(manager.get_mazes(), [])
+        self.assertEqual(manager.quiet_mode, False)
 
     def test_add_new(self):
         """Test adding mazes by passing maze specs into add_maze"""
@@ -95,6 +96,12 @@ class TestMgr(unittest.TestCase):
         filename = "myFile"
         manager.set_filename(filename)
         self.assertEqual(filename, manager.media_name)
+
+    def test_set_quiet_mode(self):
+        manager = MazeManager()
+        self.assertEqual(manager.quiet_mode, False)
+        manager.set_quiet_mode(True)
+        self.assertEqual(manager.quiet_mode, True)
 
 
 if __name__ == "__main__":
