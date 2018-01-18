@@ -13,15 +13,17 @@ class Solver(object):
     Attributes:
         maze (list): The maze which is being solved.
         neighbor_method:
+        quiet_mode: When enabled, information is not outputted to the console
 
     """
 
-    def __init__(self, maze, neighbor_method):
+    def __init__(self, maze, neighbor_method, quiet_mode):
         logging.debug("Class Solver ctor called")
 
         self.maze = maze
         self.neighbor_method = neighbor_method
         self.name = ""
+        self.quiet_mode = quiet_mode
 
     def solve(self):
         logging.debug('Class: Solver solve called')
@@ -66,8 +68,9 @@ class BreadthFirst(Solver):
                 path.append(((k_curr, l_curr), False))  # Append current cell to total search path
 
                 if (k_curr, l_curr) == self.maze.exit_coor:  # Exit if current cell is exit cell
-                    print("Number of moves performed: {}".format(len(path)))
-                    print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
+                    if not self.quiet_mode:
+                        print("Number of moves performed: {}".format(len(path)))
+                        print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
                     return path
 
                 neighbour_coors = self.maze.find_neighbours(k_curr, l_curr)  # Find neighbour indicies
@@ -110,7 +113,8 @@ class BiDirectional(Solver):
         path_kl = list()                       # To track path of solution and backtracking cells
         path_pq = list()                       # To track path of solution and backtracking cells
 
-        print("\nSolving the maze with bidirectional depth-first search...")
+        if not self.quiet_mode:
+            print("\nSolving the maze with bidirectional depth-first search...")
         time_start = time.clock()
 
         while True:   # Loop until return statement is encountered
@@ -150,8 +154,9 @@ class BiDirectional(Solver):
             if any((True for n_kl in real_neighbours_kl if (n_kl, False) in path_pq)):
                 path_kl.append(((k_curr, l_curr), False))
                 path = [p_el for p_tuple in zip(path_kl, path_pq) for p_el in p_tuple]  # Zip paths
-                print("Number of moves performed: {}".format(len(path)))
-                print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
+                if not self.quiet_mode:
+                    print("Number of moves performed: {}".format(len(path)))
+                    print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
                 logging.debug("Class BiDirectional leaving solve")
                 return path
 
@@ -159,8 +164,9 @@ class BiDirectional(Solver):
             elif any((True for n_pq in real_neighbours_pq if (n_pq, False) in path_kl)):
                 path_pq.append(((p_curr, q_curr), False))
                 path = [p_el for p_tuple in zip(path_kl, path_pq) for p_el in p_tuple]  # Zip paths
-                print("Number of moves performed: {}".format(len(path)))
-                print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
+                if not self.quietMode:
+                    print("Number of moves performed: {}".format(len(path)))
+                    print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
                 logging.debug("Class BiDirectional leaving solve")
                 return path
 
@@ -181,8 +187,9 @@ class DepthFirstBacktracker(Solver):
         self.maze.grid[k_curr][l_curr].visited = True     # Set initial cell to visited
         visited_cells = list()                  # Stack of visited cells for backtracking
         path = list()                           # To track path of solution and backtracking cells
+        if not self.quietMode:
+            print("\nSolving the maze with depth-first search...")
 
-        print("\nSolving the maze with depth-first search...")
         time_start = time.clock()
 
         while (k_curr, l_curr) != self.maze.exit_coor:     # While the exit cell has not been encountered
@@ -203,7 +210,9 @@ class DepthFirstBacktracker(Solver):
                 k_curr, l_curr = visited_cells.pop()    # Pop previous visited cell (backtracking)
 
         path.append(((k_curr, l_curr), False))  # Append final location to path
-        print("Number of moves performed: {}".format(len(path)))
-        print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
+        if not self.quietMode:
+            print("Number of moves performed: {}".format(len(path)))
+            print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
+
         logging.debug('Class DepthFirstBacktracker leaving solve')
         return path
