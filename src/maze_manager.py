@@ -118,13 +118,13 @@ class MazeManager(object):
         """DEVNOTE: When adding a new solution method, call it from here.
             Also update the list of names in the documentation above"""
         if method == "DepthFirstBacktracker":
-            solver = DepthFirstBacktracker(maze, neighbor_method, quiet_mode)
+            solver = DepthFirstBacktracker(maze, neighbor_method, self.quiet_mode)
             maze.solution_path = solver.solve()
         elif method == "BiDirectional":
-            solver = BiDirectional(maze, neighbor_method, quiet_mode)
+            solver = BiDirectional(maze, neighbor_method, self.quiet_mode)
             maze.solution_path = solver.solve()
         elif method == "BreadthFirst":
-            solver = BreadthFirst(maze, neighbor_method, quiet_mode)
+            solver = BreadthFirst(maze, neighbor_method, self.quiet_mode)
             maze.solution_path = solver.solve()
 
     def show_maze(self, id, cell_size=1):

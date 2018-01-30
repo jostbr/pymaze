@@ -17,7 +17,7 @@ class Solver(object):
 
     """
 
-    def __init__(self, maze, neighbor_method, quiet_mode):
+    def __init__(self, maze, quiet_mode, neighbor_method):
         logging.debug("Class Solver ctor called")
 
         self.maze = maze
@@ -40,11 +40,11 @@ class Solver(object):
 
 class BreadthFirst(Solver):
 
-    def __init__(self, maze, neighbor_method):
+    def __init__(self, maze, quiet_mode=False, neighbor_method="fancy"):
         logging.debug('Class BreadthFirst ctor called')
 
         self.name = "Breadth First Recursive"
-        super().__init__(maze, neighbor_method)
+        super().__init__(maze, neighbor_method, quiet_mode)
 
     def solve(self):
 
@@ -89,10 +89,10 @@ class BreadthFirst(Solver):
 
 class BiDirectional(Solver):
 
-    def __init__(self, maze, neighbor_method="fancy"):
+    def __init__(self, maze, quiet_mode=False, neighbor_method="fancy"):
         logging.debug('Class BiDirectional ctor called')
 
-        super().__init__(maze, neighbor_method)
+        super().__init__(maze, neighbor_method, quiet_mode)
         self.name = "Bi Directional"
 
     def solve(self):
@@ -164,7 +164,7 @@ class BiDirectional(Solver):
             elif any((True for n_pq in real_neighbours_pq if (n_pq, False) in path_kl)):
                 path_pq.append(((p_curr, q_curr), False))
                 path = [p_el for p_tuple in zip(path_kl, path_pq) for p_el in p_tuple]  # Zip paths
-                if not self.quietMode:
+                if not self.quiet_mode:
                     print("Number of moves performed: {}".format(len(path)))
                     print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
                 logging.debug("Class BiDirectional leaving solve")
@@ -175,10 +175,10 @@ class DepthFirstBacktracker(Solver):
     """A solver that implements the depth-first recursive backtracker algorithm.
     """
 
-    def __init__(self, maze, neighbor_method="fancy"):
+    def __init__(self, maze, quiet_mode=False,  neighbor_method="fancy"):
         logging.debug('Class DepthFirstBacktracker ctor called')
 
-        super().__init__(maze, neighbor_method)
+        super().__init__(maze, neighbor_method, quiet_mode)
         self.name = "Depth First Backtracker"
 
     def solve(self):
@@ -187,7 +187,7 @@ class DepthFirstBacktracker(Solver):
         self.maze.grid[k_curr][l_curr].visited = True     # Set initial cell to visited
         visited_cells = list()                  # Stack of visited cells for backtracking
         path = list()                           # To track path of solution and backtracking cells
-        if not self.quietMode:
+        if not self.quiet_mode:
             print("\nSolving the maze with depth-first search...")
 
         time_start = time.clock()
@@ -210,7 +210,7 @@ class DepthFirstBacktracker(Solver):
                 k_curr, l_curr = visited_cells.pop()    # Pop previous visited cell (backtracking)
 
         path.append(((k_curr, l_curr), False))  # Append final location to path
-        if not self.quietMode:
+        if not self.quiet_mode:
             print("Number of moves performed: {}".format(len(path)))
             print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
 
