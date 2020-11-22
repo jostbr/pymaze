@@ -204,7 +204,7 @@ class Maze(object):
         visited_cells = list()                  # Stack of visited cells for backtracking
 
         print("\nGenerating the maze with depth-first search...")
-        time_start = time.clock()
+        time_start = time.time()
 
         while visit_counter < self.grid_size:     # While there are unvisited cells
             neighbour_indices = self.find_neighbours(k_curr, l_curr)    # Find neighbour indicies
@@ -226,7 +226,7 @@ class Maze(object):
                 path.append((k_curr, l_curr))   # Add coordinates to part of generation path
 
         print("Number of moves performed: {}".format(len(path)))
-        print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
+        print("Execution time for algorithm: {:.4f}".format(time.time() - time_start))
 
         self.grid[self.entry_coor[0]][self.entry_coor[1]].set_as_entry_exit("entry",
             self.num_rows-1, self.num_cols-1)
