@@ -190,7 +190,7 @@ class DepthFirstBacktracker(Solver):
         if not self.quiet_mode:
             print("\nSolving the maze with depth-first search...")
 
-        time_start = time.clock()
+        time_start = time.time()
 
         while (k_curr, l_curr) != self.maze.exit_coor:     # While the exit cell has not been encountered
             neighbour_indices = self.maze.find_neighbours(k_curr, l_curr)    # Find neighbour indices
@@ -212,7 +212,7 @@ class DepthFirstBacktracker(Solver):
         path.append(((k_curr, l_curr), False))  # Append final location to path
         if not self.quiet_mode:
             print("Number of moves performed: {}".format(len(path)))
-            print("Execution time for algorithm: {:.4f}".format(time.clock() - time_start))
+            print("Execution time for algorithm: {:.4f}".format(time.time() - time_start))
 
         logging.debug('Class DepthFirstBacktracker leaving solve')
         return path
