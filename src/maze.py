@@ -3,6 +3,7 @@ import random
 import math
 import time
 from src.cell import Cell
+from src.algorithm import depth_first_recursive_backtracker, binary_tree
 
 
 class Maze(object):
@@ -199,3 +200,5 @@ class Maze(object):
 
         if algorithm == "dfs_backtrack":
             depth_first_recursive_backtracker(self, start_coor)
+        elif algorithm == "bin_tree":
+            binary_tree(self, start_coor)
