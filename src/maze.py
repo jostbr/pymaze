@@ -22,7 +22,7 @@ class Maze(object):
         grid (list): A copy of initial_grid (possible this is un-needed)
         """
 
-    def __init__(self, num_rows, num_cols, id=0):
+    def __init__(self, num_rows, num_cols, id=0, algorithm = "dfs_backtrack"):
         """Creates a gird of Cell objects that are neighbors to each other.
 
             Args:
@@ -41,7 +41,7 @@ class Maze(object):
         self.solution_path = None
         self.initial_grid = self.generate_grid()
         self.grid = self.initial_grid
-        self.generate_maze((0, 0))
+        self.generate_maze(algorithm, (0, 0))
 
     def generate_grid(self):
         """Function that creates a 2D grid of Cell objects. This can be thought of as a
@@ -188,7 +188,7 @@ class Maze(object):
 
         return rng_entry_exit       # Return entry/exit that is different from exit/entry
 
-    def generate_maze(self, start_coor = (0, 0)):
+    def generate_maze(self, algorithm, start_coor = (0, 0)):
         """This takes the internal grid object and removes walls between cells using the
         depth-first recursive backtracker algorithm.
 
