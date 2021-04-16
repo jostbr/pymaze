@@ -3,6 +3,7 @@ import random
 import math
 import time
 from src.cell import Cell
+from src.algorithm import depth_first_recursive_backtracker, binary_tree
 
 
 class Maze(object):
@@ -22,7 +23,7 @@ class Maze(object):
         grid (list): A copy of initial_grid (possible this is un-needed)
         """
 
-    def __init__(self, num_rows, num_cols, id=0):
+    def __init__(self, num_rows, num_cols, id=0, algorithm = "dfs_backtrack"):
         """Creates a gird of Cell objects that are neighbors to each other.
 
             Args:
@@ -41,7 +42,7 @@ class Maze(object):
         self.solution_path = None
         self.initial_grid = self.generate_grid()
         self.grid = self.initial_grid
-        self.generate_maze((0, 0))
+        self.generate_maze(algorithm, (0, 0))
 
     def generate_grid(self):
         """Function that creates a 2D grid of Cell objects. This can be thought of as a
@@ -188,7 +189,7 @@ class Maze(object):
 
         return rng_entry_exit       # Return entry/exit that is different from exit/entry
 
-    def generate_maze(self, start_coor = (0, 0)):
+    def generate_maze(self, algorithm, start_coor = (0, 0)):
         """This takes the internal grid object and removes walls between cells using the
         depth-first recursive backtracker algorithm.
 
@@ -197,44 +198,7 @@ class Maze(object):
 
         """
 
-        k_curr, l_curr = start_coor             # Where to start generating
-        path = [(k_curr, l_curr)]               # To track path of solution
-        self.grid[k_curr][l_curr].visited = True     # Set initial cell to visited
-        visit_counter = 1                       # To count number of visited cells
-        visited_cells = list()                  # Stack of visited cells for backtracking
-
-        print("\nGenerating the maze with depth-first search...")
-        time_start = time.time()
-
-        while visit_counter < self.grid_size:     # While there are unvisited cells
-            neighbour_indices = self.find_neighbours(k_curr, l_curr)    # Find neighbour indicies
-            neighbour_indices = self._validate_neighbours_generate(neighbour_indices)
-
-            if neighbour_indices is not None:   # If there are unvisited neighbour cells
-                visited_cells.append((k_curr, l_curr))              # Add current cell to stack
-                k_next, l_next = random.choice(neighbour_indices)     # Choose random neighbour
-                self.grid[k_curr][l_curr].remove_walls(k_next, l_next)   # Remove walls between neighbours
-                self.grid[k_next][l_next].remove_walls(k_curr, l_curr)   # Remove walls between neighbours
-                self.grid[k_next][l_next].visited = True                 # Move to that neighbour
-                k_curr = k_next
-                l_curr = l_next
-                path.append((k_curr, l_curr))   # Add coordinates to part of generation path
-                visit_counter += 1
-
-            elif len(visited_cells) > 0:  # If there are no unvisited neighbour cells
-                k_curr, l_curr = visited_cells.pop()      # Pop previous visited cell (backtracking)
-                path.append((k_curr, l_curr))   # Add coordinates to part of generation path
-
-        print("Number of moves performed: {}".format(len(path)))
-        print("Execution time for algorithm: {:.4f}".format(time.time() - time_start))
-
-        self.grid[self.entry_coor[0]][self.entry_coor[1]].set_as_entry_exit("entry",
-            self.num_rows-1, self.num_cols-1)
-        self.grid[self.exit_coor[0]][self.exit_coor[1]].set_as_entry_exit("exit",
-            self.num_rows-1, self.num_cols-1)
-
-        for i in range(self.num_rows):
-            for j in range(self.num_cols):
-                self.grid[i][j].visited = False      # Set all cells to unvisited before returning grid
-
-        self.generation_path = path
+        if algorithm == "dfs_backtrack":
+            depth_first_recursive_backtracker(self, start_coor)
+        elif algorithm == "bin_tree":
+            binary_tree(self, start_coor)

@@ -21,6 +21,11 @@ if __name__ == "__main__":
     maze2 = Maze(10, 10)
     maze2 = manager.add_existing_maze(maze2)
 
+    # by default when creating a maze, depth first search is used.
+    # to generate maze using binary tree method,
+    maze_binTree = Maze(10, 10, algorithm = "bin_tree")
+    maze_binTree = manager.add_existing_maze(maze_binTree)
+
     # We can disable showing any output from the solver by entering quiet mode
     # manager.set_quiet_mode(True)
 
