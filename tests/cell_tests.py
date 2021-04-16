@@ -49,7 +49,7 @@ class TestCell(unittest.TestCase):
         # Check if we can make the exit on the right wall in a corner
         cell = Cell(2, 2)
         cell.set_as_entry_exit(True, 2, 2)
-        self.assertEqual(cell.walls["right"], False)
+        self.assertEqual(cell.walls["right"], True)
 
     def test_remove_walls(self):
         """Test the Cell::remove_walls method"""
@@ -60,7 +60,7 @@ class TestCell(unittest.TestCase):
 
         # Remove the cell to the left
         cell = Cell(0, 1)
-        cell.remove_walls(1, 0)
+        cell.remove_walls(0, 0)
         self.assertEqual(cell.walls["left"], False)
 
         # Remove the cell above
@@ -79,30 +79,32 @@ class TestCell(unittest.TestCase):
             Note that cells are constructed with neighbors on each side.
             We'll need to remove some walls to get full coverage.
         """
+        # Create a base cell for which we will be testing whether walls exist
+        cell = Cell (1, 1)
 
-        # We should have walls on all sides of a new cell
-        cell = Cell (0, 0)
-        self.assertEqual(cell.walls, {"top": True, "right": True, "bottom": True, "left": True})
+        # Create a cell appearing to the top of this cell
+        cell_top = Cell(0,1)
+        # Create a cell appearing to the right of this cell
+        cell_right = Cell(1,2)
+        # Create a cell appearing to the bottom of this cell
+        cell_bottom = Cell(2,1)
+        # Create a cell appearing to the left of this cell
+        cell_left = Cell(1,0)
 
-        # Remove the wall to the right
-        cell2 = Cell(1, 0)
-        cell2.remove_walls(1, 2)
-        self.assertEqual(cell.walls, {"top": True, "right": False, "bottom": True, "left": True})
 
-        # Remove the wall to the left
-        cell3 = Cell(0, 2)
-        cell3.remove_walls(0, 1)
-        self.assertEqual(cell.walls, {"top": True, "right": True, "bottom": True, "left": False})
+        # check for walls between all these cells
+        self.assertEqual(cell.is_walls_between(cell_top), True)
+        self.assertEqual(cell.is_walls_between(cell_right), True)
+        self.assertEqual(cell.is_walls_between(cell_bottom), True)
+        self.assertEqual(cell.is_walls_between(cell_left), True)
 
-        # Remove the wall on the top
-        cell4 = Cell(1, 2)
-        cell4.remove_walls(0, 2)
-        self.assertEqual(cell.walls, {"top": False, "right": True, "bottom": True, "left": True})
+        # remove top wall of 'cell' and bottom wall of 'cell_top'
+        cell.remove_walls(0,1)
+        cell_top.remove_walls(1,1)
 
-        # Remove the wall on the bottom
-        cell5 = Cell(2, 2)
-        cell5.remove_walls(3, 2)
-        self.assertEqual(cell.walls, {"top": True, "right": True, "bottom": False, "left": True})
+        # check that there are no walls between these cells
+        self.assertEqual(cell.is_walls_between(cell_top), False)
+
 
 
 if __name__ == "__main__":
