@@ -1,13 +1,11 @@
-from __future__ import absolute_import
 import unittest
 
-from src.maze_manager import MazeManager
-from src.maze_viz import Visualizer
-from src.maze import Maze
+from pymaze.maze_manager import MazeManager
+from pymaze.maze_viz import Visualizer
+from pymaze.maze import Maze
 
 
 class TestMgr(unittest.TestCase):
-
     def test_ctor(self):
         """Make sure that the constructor values are getting properly set."""
         manager = MazeManager()

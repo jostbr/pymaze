@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 import unittest
 
-from src.maze import Maze
-from src.cell import Cell
+from pymaze.maze import Maze
+from pymaze.cell import Cell
 
 
 def generate_maze():
@@ -23,9 +23,9 @@ class TestMaze(unittest.TestCase):
         self.assertEqual(maze.num_cols, cols)
         self.assertEqual(maze.num_rows, rows)
         self.assertEqual(maze.id, 0)
-        self.assertEqual(maze.grid_size, rows*cols)
+        self.assertEqual(maze.grid_size, rows * cols)
 
-        id=33
+        id = 33
         maze2 = Maze(rows, cols, id)
         self.assertEqual(maze2.num_cols, cols)
         self.assertEqual(maze2.num_rows, rows)

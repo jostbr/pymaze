@@ -1,8 +1,6 @@
-from __future__ import absolute_import
 import unittest
 
-from src.solver import Solver
-
+from pymaze.solver import Solver
 
 
 class TestSolver(unittest.TestCase):
