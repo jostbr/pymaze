@@ -2,6 +2,8 @@
 
 Python scripts for generating random solvable mazes using the depth-first search and recursive backtracking algorithms. The code also implements a recursive backtracking pathfinding algorithm for solving the generated mazes.
 
+![maze_solution.png](maze_solution.png)
+
 Both the generator and the solver algorithm use recursive backtracking. Here is an example of how that looks like:
 
 ![backtracking.png](backtracking.png)
@@ -114,4 +116,4 @@ The style guide employed is pycodestyle. To install pycodestyle, navigate to the
 
 To check your file run
 
-`pycodestyle src/my_file.py`.
+`pycodestyle pymaze/my_file.py`.
