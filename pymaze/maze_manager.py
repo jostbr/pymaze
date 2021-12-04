@@ -1,8 +1,8 @@
-from src.maze import Maze
-from src.maze_viz import Visualizer
-from src.solver import DepthFirstBacktracker
-from src.solver import BiDirectional
-from src.solver import BreadthFirst
+from .maze import Maze
+from .maze_viz import Visualizer
+from .solver import DepthFirstBacktracker
+from .solver import BiDirectional
+from .solver import BreadthFirst
 
 
 class MazeManager(object):
@@ -67,7 +67,7 @@ class MazeManager(object):
                 if len(self.mazes) < 1:
                     maze.id = 0
                 else:
-                    maze.id = self.mazes.__len__()+1
+                    maze.id = self.mazes.__len__() + 1
         else:
             return False
         self.mazes.append(maze)
@@ -76,12 +76,12 @@ class MazeManager(object):
     def get_maze(self, id):
         """Get a maze by its id.
 
-            Args:
-                id (int): The id of the desired maze
+        Args:
+            id (int): The id of the desired maze
 
-            Return:
-                    Maze: Returns the maze if it was found.
-                    None: If no maze was found
+        Return:
+                Maze: Returns the maze if it was found.
+                None: If no maze was found
         """
 
         for maze in self.mazes:
@@ -99,7 +99,7 @@ class MazeManager(object):
         return self.mazes.__len__()
 
     def solve_maze(self, maze_id, method, neighbor_method="fancy"):
-        """ Called to solve a maze by a particular method. The method
+        """Called to solve a maze by a particular method. The method
         is specified by a string. The options are
             1. DepthFirstBacktracker
             2.
@@ -118,7 +118,9 @@ class MazeManager(object):
         """DEVNOTE: When adding a new solution method, call it from here.
             Also update the list of names in the documentation above"""
         if method == "DepthFirstBacktracker":
-            solver = DepthFirstBacktracker(maze, neighbor_method, self.quiet_mode)
+            solver = DepthFirstBacktracker(
+                maze, neighbor_method, self.quiet_mode
+            )
             maze.solution_path = solver.solve()
         elif method == "BiDirectional":
             solver = BiDirectional(maze, neighbor_method, self.quiet_mode)
@@ -140,7 +142,7 @@ class MazeManager(object):
         vis = Visualizer(self.get_maze(id), cell_size, self.media_name)
         vis.show_maze_solution()
 
-    def show_solution_animation(self, id, cell_size =1):
+    def show_solution_animation(self, id, cell_size=1):
         """
         Shows the animation of the path that the solver took.
 
@@ -160,7 +162,7 @@ class MazeManager(object):
         Returns:
 
         """
-        return next((maze for maze in self.mazes if maze .id == id), None)
+        return next((maze for maze in self.mazes if maze.id == id), None)
 
     def set_filename(self, filename):
         """
@@ -177,4 +179,4 @@ class MazeManager(object):
         Args:
             enabled (bool): True when quiet mode is on, False when it is off
         """
-        self.quiet_mode=enabled
+        self.quiet_mode = enabled
