@@ -1,6 +1,5 @@
-from __future__ import absolute_import
-from src.maze_manager import MazeManager
-from src.maze import Maze
+from pymaze.maze_manager import MazeManager
+from pymaze.maze import Maze
 
 
 if __name__ == "__main__":
