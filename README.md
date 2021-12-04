@@ -4,7 +4,7 @@ Python scripts for generating random solvable mazes using the depth-first search
 
 Both the generator and the solver algorithm use recursive backtracking. Here is an example of how that looks like:
 
-[backtracking.png](!backtracking.png)
+![backtracking.png](backtracking.png)
 
  Cells indicated in light orange are part of the backtracking. The algorithm moves randomly from a cell to one of its unvisited neighbors. If the search reaches a cell for which all neighbors are visited, the search backtracks until it moves to a cell with unvisited neighbors.
 
