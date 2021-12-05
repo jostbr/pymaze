@@ -1,6 +1,5 @@
-from __future__ import absolute_import
-from src.maze_manager import MazeManager
-from src.maze import Maze
+from pymaze.maze_manager import MazeManager
+from pymaze.maze import Maze
 
 
 if __name__ == "__main__":
@@ -23,15 +22,15 @@ if __name__ == "__main__":
 
     # by default when creating a maze, depth first search is used.
     # to generate maze using binary tree method,
-    maze_binTree = Maze(10, 10, algorithm = "bin_tree")
+    maze_binTree = Maze(10, 10, algorithm="bin_tree")
     maze_binTree = manager.add_existing_maze(maze_binTree)
 
     # We can disable showing any output from the solver by entering quiet mode
     # manager.set_quiet_mode(True)
 
     # Once we have a maze in the manager, we can tell the manager to solve it with a particular algorithm.
-    #manager.solve_maze(maze.id, "BreadthFirst")
-    #manager.solve_maze(maze.id, "BiDirectional")
+    # manager.solve_maze(maze.id, "BreadthFirst")
+    # manager.solve_maze(maze.id, "BiDirectional")
     manager.solve_maze(maze.id, "DepthFirstBacktracker")
 
     # If we want to save the maze & maze solution images along with their animations, we need to let the manager know.

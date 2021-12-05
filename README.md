@@ -1,18 +1,25 @@
 # Maze generator and solver
-Python scripts for generating random solvable mazes using the depth-first search and recursive backtracking algorithms. The code also implements a recursive backtracking pathfinding algorithm for solving the generated mazes. Here is an example of a generated maze and its computed solution.  
 
+Python scripts for generating random solvable mazes using the depth-first search and recursive backtracking algorithms. The code also implements a recursive backtracking pathfinding algorithm for solving the generated mazes.
 
-Both the generator and solver algorithm uses recursive backtracking and here an example of the latter can be seen. Cells indicated in light orange are part of the backtracking. The algorithms works by moving randomly from a cell to one of its unvisited neighbours. If the search reaches cell which have no unvisited neighbours, the search backtracks until it moves to a cell with unvisited neighbours. The generator algorithm is heavily inspired by the psuedo code provided by [Wikipedia](https://en.wikipedia.org/wiki/Maze_generation_algorithm). The main difference between the generator and solver algorithms are in the fact that, when solving the maze, one has to take into account not being able to move through walls. And thus proper pathfinding needs to be implemented. There's also impmeneted an ehnaced version of the solver algorithm which moves not to a random neighbour, but moves to the neighbour that minimizes the distance sqrt(x^2 + y^2) to the exit cell (final destination).
+![maze_solution.png](maze_solution.png)
 
+Both the generator and the solver algorithm use recursive backtracking. Here is an example of how that looks like:
+
+![backtracking.png](backtracking.png)
+
+ Cells indicated in light orange are part of the backtracking. The algorithm moves randomly from a cell to one of its unvisited neighbors. If the search reaches a cell for which all neighbors are visited, the search backtracks until it moves to a cell with unvisited neighbors.
+
+ The generator algorithm is inspired by the pseudocode provided by [Wikipedia](https://en.wikipedia.org/wiki/Maze_generation_algorithm). The main difference between the generator and solver algorithms is that, when solving the maze, one has to take into account not being able to move through walls, so proper pathfinding needs to be implemented. There is also an enhanced version of the solver algorithm. Instead of jumping to a random neighbor, this version moves to the one that minimizes the L2 distance, sqrt(x^2 + y^2), to the exit cell.
 
 ## Quick Use Guide
-The first step is to install the dependancies by opening the terminal, navigating to 
-the MazeGenerator directory, and running
 
-`pip install -r requirements.txt`
+The first step is to install the dependencies is by opening the terminal, navigating to the MazeGenerator directory, and running
 
-Next, run the `quick_start` python example under the examples directory. If this ran without any errors,
-you should be fine to create your own program. Use the format outlined in quick_start, or use
+`pip install -e .`
+
+Next, run the `quick_start` python example under the examples directory. If this runs without any errors,
+you should be fine to create your program. Use the format outlined in quick_start, or use
 another example as a template.
 
 The process for creating and solving a maze follows.
@@ -22,15 +29,12 @@ The process for creating and solving a maze follows.
     3. Solve the maze
     4. Optionally visualize the results
 
-
 An example of using the library with different options is shown below.
-
 
 ```python
 
-from __future__ import absolute_import
-from src.maze_manager import MazeManager
-from src.maze import Maze
+from pymaze.maze_manager import MazeManager
+from pymaze.maze import Maze
 
 
 if __name__ == "__main__":
@@ -76,24 +80,21 @@ if __name__ == "__main__":
     manager.show_solution(maze.id)
 ```
 
-
-
-
 ## Developer's Guide
 
 ### Source Layout
-* /src/   Holds the source code (modules) needed to run MazeGenerator.
-* /tests/ Holds the unit tests that test the code in /src/
-* /examples/ Example files that demonstrate how to use the library. 
 
+* /pymaze/   Holds the source code (modules) needed to run MazeGenerator.
+* /tests/ Holds the unit tests that test the code in /src/
+* /examples/ Example files that demonstrate how to use the library.
 
 ### Class Overview
+
 * The`Maze` class. This class provides helper functions to easily manipulate the cells. It can be thought of as being a grid of Cells
 * The `Cell` class is used to keep track of walls, and is what makes up the list.
 * The `Visualizer` class is responsible for handling the generation, display, and saving of animations and grid images. It can be interacted with directly, or controlled thought the `MazeManager` class.
-* The `Solve` class. All solution methods are derived from this class. 
+* The `Solve` class. All solution methods are derived from this class.
 * The `MazeManager` class acts as the glue, bridging the `Visualizer`, `Maze`, and `Solve` classes together.
-
 
 ### Adding a new Solution Algorithm
 
@@ -110,9 +111,9 @@ Be sure to create a new example using the new generation algorithm.
 #### Using the linter
 
 The style guide employed is pycodestyle. To install pycodestyle, navigate to the main directory and run
- 
+
 `pip install -r requirements.txt`
 
 To check your file run
- 
-`pycodestyle src/my_file.py`.
+
+`pycodestyle pymaze/my_file.py`.
