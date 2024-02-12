@@ -3,8 +3,7 @@ import random
 import math
 import time
 from src.cell import Cell
-from src.algorithm import depth_first_recursive_backtracker, binary_tree
-
+from src.algorithm import depth_first_recursive_backtracker, binary_tree, aldous_broder
 
 class Maze(object):
     """Class representing a maze; a 2D grid of Cell objects. Contains functions
@@ -23,7 +22,7 @@ class Maze(object):
         grid (list): A copy of initial_grid (possible this is un-needed)
         """
 
-    def __init__(self, num_rows, num_cols, id=0, algorithm = "dfs_backtrack"):
+    def __init__(self, num_rows, num_cols, id=0, algorithm = "dfs_backtrack",start_coor = (0, 0)): 
         """Creates a gird of Cell objects that are neighbors to each other.
 
             Args:
@@ -42,7 +41,7 @@ class Maze(object):
         self.solution_path = None
         self.initial_grid = self.generate_grid()
         self.grid = self.initial_grid
-        self.generate_maze(algorithm, (0, 0))
+        self.generate_maze(algorithm, start_coor = start_coor)
 
     def generate_grid(self):
         """Function that creates a 2D grid of Cell objects. This can be thought of as a
@@ -189,7 +188,7 @@ class Maze(object):
 
         return rng_entry_exit       # Return entry/exit that is different from exit/entry
 
-    def generate_maze(self, algorithm, start_coor = (0, 0)):
+    def generate_maze(self, algorithm, start_coor):
         """This takes the internal grid object and removes walls between cells using the
         depth-first recursive backtracker algorithm.
 
@@ -202,3 +201,5 @@ class Maze(object):
             depth_first_recursive_backtracker(self, start_coor)
         elif algorithm == "bin_tree":
             binary_tree(self, start_coor)
+        elif algorithm == "aldous_broder":
+            aldous_broder(self, start_coor)

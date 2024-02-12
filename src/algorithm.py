@@ -165,3 +165,31 @@ def binary_tree( maze, start_coor ):
 
     print(f"Generating path for maze took {time.time() - begin_time}s.")
     maze.generation_path = path
+
+def aldous_broder(maze, start_coor):
+    width = maze.num_cols
+    height = maze.num_rows
+    x, y = start_coor
+    remaining = width * height
+
+    path = [(x, y)]  # Initialize path with the start coordinates
+
+    while remaining > 0:
+        directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]  # N, S, E, W
+        random.shuffle(directions)
+
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+
+            if 0 <= nx < width and 0 <= ny < height:
+                if not maze.grid[ny][nx].visited:
+                    maze.grid[y][x].remove_walls(ny, nx)
+                    maze.grid[ny][nx].remove_walls(y, x)
+                    maze.grid[ny][nx].visited = True
+                    remaining -= 1
+
+                x, y = nx, ny
+                path.append((x, y))  # Add the new cell to the path
+                break
+
+    maze.generation_path = path  # Assign the path to the maze's generation_path attribute
